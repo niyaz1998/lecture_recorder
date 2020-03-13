@@ -16,3 +16,4 @@ https://www.pivotaltracker.com/n/projects/2436905
 * Methodology - weekly meeting on Thursday after lecture
 * Prioritization - MoSCoW
 * Tasks - feature list
+* bracnhing naming - #[id_from_pivotal]\_[some_name]
