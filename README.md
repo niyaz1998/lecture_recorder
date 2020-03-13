@@ -17,3 +17,6 @@ https://www.pivotaltracker.com/n/projects/2436905
 * Prioritization - MoSCoW
 * Tasks - feature list
 * bracnhing naming - #[id_from_pivotal]\_[some_name]
+
+#### Design of UI
+will be defined later
