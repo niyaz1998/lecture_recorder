@@ -4,8 +4,8 @@ Mobile application for recording lectures with ability to make notes.
 Product owner: Alexander Simonenko (professor)
 
 #### Team members:
-* Niyaz Ginatullin - Scrum master, mobile development
-* Maksim SUrkov - mobile development
+* Niyaz Ginatullin - Scrum master, mobile developer
+* Maksim Surkov - mobile developer
 * Fael Zaripov - backend developer
 
 #### Tools
@@ -19,4 +19,4 @@ https://www.pivotaltracker.com/n/projects/2436905
 * bracnhing naming - #[id_from_pivotal]\_[some_name]
 
 #### Design of UI
-will be defined later
+https://www.figma.com/file/nAtNMqsEmpIXg8bZxKMg2c/Course-recorder?node-id=0%3A1
