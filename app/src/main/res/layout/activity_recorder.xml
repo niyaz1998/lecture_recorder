@@ -18,9 +18,11 @@
             android:id="@+id/bMain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             app:layout_constraintEnd_toStartOf="@id/bAddNote"
             app:layout_constraintStart_toEndOf="@id/textTimer"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/textStartRecording"
             app:srcCompat="@drawable/ic_play_circle"
             tools:layout_editor_absoluteX="150dp" />
 
@@ -28,9 +30,9 @@
             android:id="@+id/textTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="00:10:12"
+            android:text="@string/time_zero"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/bMain"
+            app:layout_constraintEnd_toStartOf="@+id/textStartRecording"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -51,7 +53,7 @@
             android:text="@string/add_note"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/bMain"
+            app:layout_constraintStart_toEndOf="@+id/textStartRecording"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
