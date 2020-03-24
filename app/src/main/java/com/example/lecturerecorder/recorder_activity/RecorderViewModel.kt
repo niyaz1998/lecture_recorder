@@ -2,6 +2,7 @@ package com.example.lecturerecorder.recorder_activity
 
 import android.media.MediaRecorder
 import android.util.Log
+import com.example.lecturerecorder.model.Note
 import java.io.IOException
 import java.util.*
 
@@ -10,10 +11,15 @@ enum class RecorderState { NOT_STARTED, RECORDING, RECORDED }
 
 private const val LOG_TAG = "RecorderViewModel"
 
-class RecorderViewModel(private val fileName: String, private val view: RecorderActivity) {
+class RecorderViewModel(
+    private val fileName: String,
+    private val view: RecorderActivity,
+    private var notes: MutableList<Note>
+) {
     private var recorder: MediaRecorder? = null
     private var state: RecorderState = RecorderState.NOT_STARTED
     private var timer: Timer? = null
+    private var timerStartTime: Calendar? = null
 
     init {
         view.setButton(ButtonState.RECORD)
@@ -25,11 +31,13 @@ class RecorderViewModel(private val fileName: String, private val view: Recorder
             startTimer()
             state = RecorderState.RECORDING
             view.setButton(ButtonState.STOP_RECORD)
+            view.enableAddNodeButton(true)
         } else if (state == RecorderState.RECORDING) {
             stopRecording()
             stopTimer()
             state = RecorderState.RECORDED
             view.setButton(ButtonState.NULL)
+            view.enableAddNodeButton(false)
         }
     }
 
@@ -38,6 +46,10 @@ class RecorderViewModel(private val fileName: String, private val view: Recorder
         recorder?.reset()
         recorder?.release()
         recorder = null
+    }
+
+    fun onSavePressed() {
+        printData()
     }
 
     private fun startRecording() {
@@ -68,25 +80,45 @@ class RecorderViewModel(private val fileName: String, private val view: Recorder
 
     private fun startTimer() {
         timer = Timer()
-        timer?.schedule(MillisPassedTimer(Calendar.getInstance()) {
-            view.setTime(it)
+        timerStartTime = Calendar.getInstance()
+        timer?.schedule(object : TimerTask() {
+            override fun run() {
+                view.setTime(getSecondsFromStartTime())
+            }
+
         }, 0, 1000)
     }
 
     private fun stopTimer() {
         timer?.cancel()
         timer = null
+        timerStartTime = null
         view.setTime(0)
     }
-}
 
-class MillisPassedTimer(
-    private val time: Calendar,
-    private val callback: (Seconds: Long) -> Unit
-) :
-    TimerTask() {
+    fun addNote() {
+        notes.add(notes.size, Note("", getSecondsFromStartTime()))
+        view.showNotesList(notes)
+    }
 
-    override fun run() {
-        callback((Calendar.getInstance().timeInMillis - time.timeInMillis))
+    private fun getSecondsFromStartTime(): Long =
+        (Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000
+
+    fun onNoteRemove(index: Int) {
+        notes.removeAt(index)
+        view.showNotesList(notes)
+    }
+
+    fun onTextChangedRemove(index: Int, text: String) {
+        notes[index].text = text
+        // printData()
+    }
+
+    private fun printData() {
+        Log.d("Niyaz", fileName)
+
+        notes.forEach {
+            Log.d("Niyaz", "${it.seconds}:${it.text}")
+        }
     }
 }

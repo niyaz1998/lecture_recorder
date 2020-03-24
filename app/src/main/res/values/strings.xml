@@ -3,4 +3,5 @@
     <string name="start_recording">start recording</string>
     <string name="add_note">Add Note</string>
     <string name="time_zero">00:00:00</string>
+    <string name="save_record">Save Record</string>
 </resources>

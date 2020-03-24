@@ -3,11 +3,13 @@ package com.example.lecturerecorder.recorder_activity
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
+import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_recorder.*
 
 
@@ -25,15 +27,31 @@ class RecorderActivity : AppCompatActivity() {
 
         val fileName = "${externalCacheDir?.absolutePath}/audiorecordtest.3gp"
 
-        viewModel = RecorderViewModel(fileName, this)
+        viewModel = RecorderViewModel(fileName, this, mutableListOf())
 
-        Log.e("recorder path", fileName)
         bMain.setOnClickListener {
             viewModel?.onMainButtonPressed()
         }
 
         bAddNote.setOnClickListener {
+            viewModel?.addNote()
         }
+        bAddNote.isEnabled = false
+
+        val viewManager = LinearLayoutManager(this)
+        val viewAdapter = NotesAdapter(
+            emptyList(),
+            { viewModel?.onNoteRemove(it) },
+            { index, text -> viewModel?.onTextChangedRemove(index, text) }
+        )
+        rvNotes.apply {
+            setHasFixedSize(true)
+            layoutManager = viewManager
+            adapter = viewAdapter
+        }
+
+        bSave.setOnClickListener { viewModel?.onSavePressed() }
+
         ActivityCompat.requestPermissions(
             this,
             permissions,
@@ -65,28 +83,30 @@ class RecorderActivity : AppCompatActivity() {
         viewModel?.onStop()
     }
 
-    fun setTime(millis: Long) {
+    fun setTime(seconds: Long) {
         runOnUiThread {
-            val seconds = (millis / 1000).toInt()
-            val minutes = seconds / 60
-            val hours = minutes / 60
-
-            val text = "${formatForTime(hours)}:${formatForTime(minutes)}:${formatForTime(seconds)}"
-
-            textTimer.text = text
+            textTimer.text = formatTime(seconds)
         }
-    }
-
-    private fun formatForTime(value: Int): String {
-        return if (value < 10) "0${value}" else value.toString()
     }
 
     fun setButton(state: ButtonState) {
         when (state) {
             ButtonState.RECORD -> bMain.setImageResource(R.drawable.ic_radio)
             ButtonState.STOP_RECORD -> bMain.setImageResource(R.drawable.ic_mute)
-            ButtonState.NULL -> bMain.visibility = View.GONE
+            ButtonState.NULL -> bMain.visibility = View.INVISIBLE
         }
+    }
+
+    fun showNotesList(notes: List<Note>) {
+        val viewAdapter = NotesAdapter(notes,
+            { viewModel?.onNoteRemove(it) },
+            { index, text -> viewModel?.onTextChangedRemove(index, text) }
+        )
+        rvNotes.swapAdapter(viewAdapter, false)
+    }
+
+    fun enableAddNodeButton(enabled: Boolean) {
+        bAddNote.isEnabled = enabled
     }
 }
 
