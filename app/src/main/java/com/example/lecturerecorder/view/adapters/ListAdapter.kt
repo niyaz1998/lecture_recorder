@@ -1,4 +1,4 @@
-package com.example.lecturerecorder.adapters
+package com.example.lecturerecorder.view.adapters
 
 import android.view.LayoutInflater
 import android.view.View

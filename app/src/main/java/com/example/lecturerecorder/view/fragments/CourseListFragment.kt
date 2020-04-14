@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.lecturerecorder.R
-import com.example.lecturerecorder.adapters.ListAdapter
+import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.model.ListElement
 import com.example.lecturerecorder.model.ListElementType
 import com.example.lecturerecorder.utils.SpacedDividerItemDecoration

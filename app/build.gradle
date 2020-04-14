@@ -6,10 +6,10 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.example.lecturerecorder"
-        minSdkVersion 19
+        minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -19,6 +19,10 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField 'String', 'BASE_URL', '\"http://192.168.1.69:8080/\"'
+        }
+        debug {
+            buildConfigField 'String', 'BASE_URL', '\"http://192.168.1.69:8080/\"'
         }
     }
 }
@@ -39,4 +43,17 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:2.3.0-alpha04"
     implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.0-alpha04"
     androidTestImplementation "androidx.navigation:navigation-testing:2.3.0-alpha04"
+
+    //Network
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0' // HTTP Client
+    implementation 'com.google.code.gson:gson:2.8.5' // Json Parser
+
+    // Support for connection parser to retrofit
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    // Retrofit support library which allows to work with Rest API
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0' // RxJava
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.6'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 }
