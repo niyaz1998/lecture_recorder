@@ -4,4 +4,6 @@
     <string name="add_note">Add Note</string>
     <string name="time_zero">00:00:00</string>
     <string name="save_record">Save Record</string>
+    <string name="checking_sign_in">Checking Sign In</string>
+    <string name="login_failed">Login Failed</string>
 </resources>
