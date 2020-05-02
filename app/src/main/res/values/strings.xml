@@ -4,4 +4,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title">Title</string>
+    <string name="start_recording">start recording</string>
+    <string name="add_note">Add Note</string>
+    <string name="time_zero">00:00:00</string>
+    <string name="save_record">Save Record</string>
+    <string name="checking_sign_in">Checking Sign In</string>
+    <string name="login_failed">Login Failed</string>
 </resources>
