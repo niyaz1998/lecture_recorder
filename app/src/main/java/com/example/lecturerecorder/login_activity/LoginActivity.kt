@@ -5,8 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.lecturerecorder.MainActivity
 import com.example.lecturerecorder.R
+import com.example.lecturerecorder.view.MainActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
