@@ -18,6 +18,7 @@ import com.example.lecturerecorder.model.TopicResponse
 import com.example.lecturerecorder.utils.RestClient
 import com.example.lecturerecorder.utils.SpacedDividerItemDecoration
 import com.example.lecturerecorder.utils.parseHttpErrorMessage
+import com.example.lecturerecorder.viewmodel.ListViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -26,22 +27,12 @@ import kotlinx.android.synthetic.main.fragment_recycler_list.*
 
 class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
 
-    private var testData = listOf(
-        ListElement(ListElementType.Detailed,"Topic 1", "some description 1", "12 courses", "id1"),
-        ListElement(ListElementType.Short,"Course", "some description 2", "info 1", "id2"),
-        ListElement(ListElementType.Detailed,"Topic 3", "some description 3", "7 courses", "id3"),
-        ListElement(ListElementType.Short,"Lecture 7", "some description 4", "info 1", "id4"),
-        ListElement(ListElementType.Short,"Lectue 8", "some description 5", "info 1", "id5"),
-        ListElement(ListElementType.Detailed,"Topic 6", "some description 6", "2 courses", "id6"),
-        ListElement(ListElementType.Detailed,"Topic 7", "some description 7", "3 courses", "id7")
-    )
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var compositeDisposable: CompositeDisposable
 
-    // TODO pass list data via viewModel
+    private val model: ListViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +53,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
         compositeDisposable = CompositeDisposable()
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = ListAdapter(testData, this)
+        viewAdapter = ListAdapter(emptyList(), this)
 
         recyclerView = view.findViewById<RecyclerView>(list_container.id).apply {
             setHasFixedSize(true)
@@ -73,8 +64,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
         recyclerView.addItemDecoration(
             SpacedDividerItemDecoration(context)
         )
-        setActionBarTitle("Topics") // TODO: use string resources
-        // TODO: set viewmodel to observe data
+        setActionBarTitle(getString(R.string.topics))
 
         loadAndSetData()
     }
@@ -87,10 +77,16 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
                 .subscribe(this::handleResponse, this::handleError))
     }
 
-    private fun handleResponse(topics: List<TopicResponse>) {
-        testData = topics.map{ ListElement(ListElementType.Detailed, it.name, it.description, it.courses.toString()+" courses", it.id.toString())}
-        viewAdapter = ListAdapter(testData, this)
-        recyclerView.adapter = viewAdapter
+    private fun handleResponse(topics: List<TopicResponse>?) {
+        val mappedList = topics?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "${it.courses} ${getString(
+            R.string.courses_lowercase)}", it.id)}
+        if (mappedList.isNullOrEmpty()) {
+            // set empty icon
+        } else {
+            viewAdapter = ListAdapter(mappedList, this)
+            recyclerView.adapter = viewAdapter
+            model.topics.postValue(mappedList)
+        }
     }
 
     private fun handleError(error: Throwable) {
@@ -125,9 +121,8 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
     }
 
     override fun onSelect(position: Int) {
-        val elem = testData[position]
+        val elem = model.topics.value?.get(position)?:return
+        model.selectedTopicId.postValue(elem.id)
         view?.findNavController()?.navigate(R.id.action_topicListFragment_to_courseListFragment)
-        // modify titlebar
-        //(activity as )?.setTitleBarText("Course: ")
     }
 }

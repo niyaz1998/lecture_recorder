@@ -34,9 +34,9 @@ fun parseHttpErrorMessage(error: Throwable): String {
         val gson = Gson()
         val adapter = gson.getAdapter<ErrorResponse>(ErrorResponse::class.java)
         try {
-            val error = adapter.fromJson(body?.string())
-            if (!error.message.isNullOrBlank()) {
-                message = error.message
+            val http_error = adapter.fromJson(body?.string())
+            if (!http_error.message.isNullOrBlank()) {
+                message = http_error.message
             }
         } catch (e: Exception) {
             e.printStackTrace()

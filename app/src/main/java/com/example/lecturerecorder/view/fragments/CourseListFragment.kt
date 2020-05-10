@@ -5,31 +5,33 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.lecturerecorder.R
+import com.example.lecturerecorder.model.CourseResponse
 import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.model.ListElement
 import com.example.lecturerecorder.model.ListElementType
+import com.example.lecturerecorder.model.TopicResponse
+import com.example.lecturerecorder.utils.RestClient
 import com.example.lecturerecorder.utils.SpacedDividerItemDecoration
+import com.example.lecturerecorder.utils.parseHttpErrorMessage
+import com.example.lecturerecorder.viewmodel.ListViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
 
 class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
 
-    private val testData = listOf(
-        ListElement(ListElementType.Detailed,"Topic 1", "some description 1", "info 1", "id1"),
-        ListElement(ListElementType.Short,"Topic 2", "some description 2", "info 1", "id2"),
-        ListElement(ListElementType.Detailed,"Topic 3", "some description 3", "info 1", "id3"),
-        ListElement(ListElementType.Short,"Topic 4", "some description 4", "info 1", "id4"),
-        ListElement(ListElementType.Short,"Topic 5", "some description 5", "info 1", "id5"),
-        ListElement(ListElementType.Detailed,"Topic 6", "some description 6", "info 1", "id6"),
-        ListElement(ListElementType.Detailed,"Topic 7", "some description 7", "info 1", "id7")
-    )
-
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
+    private lateinit var compositeDisposable: CompositeDisposable
+
+    private val model: ListViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +47,10 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        compositeDisposable = CompositeDisposable()
+
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = ListAdapter(testData, this)
+        viewAdapter = ListAdapter(emptyList(), this)
 
         recyclerView = view.findViewById<RecyclerView>(list_container.id).apply {
             setHasFixedSize(true)
@@ -57,7 +61,44 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
         recyclerView.addItemDecoration(
             SpacedDividerItemDecoration(context)
         )
-        setActionBarTitle("Courses")
+
+        setActionBarTitle(getString(R.string.courses))
+
+        val selectedTopicId = model.selectedTopicId.value
+        if (selectedTopicId != null) {
+            loadAndSetData(selectedTopicId)
+        }
+    }
+
+    fun loadAndSetData(topicId: Int) {
+        compositeDisposable.add(
+            RestClient.listService.getCourses(topicId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::handleResponse, this::handleError))
+    }
+
+    private fun handleResponse(courses: List<CourseResponse>?) {
+        val mappedList = courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "${it.audios} ${getString(
+            R.string.lectures_underscore)}", it.id)}
+
+        if (mappedList.isNullOrEmpty()) {
+            // set empty icon
+        } else {
+            viewAdapter = ListAdapter(mappedList, this)
+            recyclerView.adapter = viewAdapter
+            model.courses.postValue(mappedList)
+        }
+    }
+
+    private fun handleError(error: Throwable) {
+        val message = parseHttpErrorMessage(error)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable.clear()
     }
 
     fun setActionBarTitle(text: String) {
@@ -76,7 +117,8 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
     }
 
     override fun onSelect(position: Int) {
-        val elem = testData[position]
+        val elem = model.courses.value?.get(position)?:return
+        model.selectedCourseId.postValue(elem.id)
         Toast.makeText(context, elem.title, Toast.LENGTH_LONG).show()
     }
 }

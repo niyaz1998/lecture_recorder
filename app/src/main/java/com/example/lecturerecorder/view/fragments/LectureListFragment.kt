@@ -20,13 +20,13 @@ import kotlinx.android.synthetic.main.fragment_recycler_list.*
 class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
 
     private val testData = listOf(
-        ListElement(ListElementType.Detailed,"Topic 1", "some description 1", "info 1", "id1"),
-        ListElement(ListElementType.Short,"Topic 2", "some description 2", "info 1", "id2"),
-        ListElement(ListElementType.Detailed,"Topic 3", "some description 3", "info 1", "id3"),
-        ListElement(ListElementType.Short,"Topic 4", "some description 4", "info 1", "id4"),
-        ListElement(ListElementType.Short,"Topic 5", "some description 5", "info 1", "id5"),
-        ListElement(ListElementType.Detailed,"Topic 6", "some description 6", "info 1", "id6"),
-        ListElement(ListElementType.Detailed,"Topic 7", "some description 7", "info 1", "id7")
+        ListElement(ListElementType.Detailed,"Topic 1", "some description 1", "info 1", 0),
+        ListElement(ListElementType.Short,"Topic 2", "some description 2", "info 1", 1),
+        ListElement(ListElementType.Detailed,"Topic 3", "some description 3", "info 1", 2),
+        ListElement(ListElementType.Short,"Topic 4", "some description 4", "info 1", 3),
+        ListElement(ListElementType.Short,"Topic 5", "some description 5", "info 1", 4),
+        ListElement(ListElementType.Detailed,"Topic 6", "some description 6", "info 1", 5),
+        ListElement(ListElementType.Detailed,"Topic 7", "some description 7", "info 1", 6)
     )
 
     private lateinit var recyclerView: RecyclerView

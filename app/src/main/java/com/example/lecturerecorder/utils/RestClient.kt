@@ -3,6 +3,7 @@ package com.example.lecturerecorder.utils
 import com.example.lecturerecorder.BuildConfig
 import com.example.lecturerecorder.model.AuthService
 import com.example.lecturerecorder.model.ListService
+import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
@@ -28,7 +29,7 @@ object RestClient {
     private val retrofit = Retrofit.Builder().apply {
         baseUrl(BuildConfig.BASE_URL)
         client(okHttpBuilder.build())
-        addConverterFactory(GsonConverterFactory.create())
+        addConverterFactory(GsonConverterFactory.create(GsonBuilder().serializeNulls().create()))
         addCallAdapterFactory(RxJava2CallAdapterFactory.create())
     }.build()
 

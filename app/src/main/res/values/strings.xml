@@ -12,4 +12,8 @@
     <string name="login_failed">Login Failed</string>
     <string name="AUTH_TOKEN">AUTH_TOKEN_LECTURERECORDER</string>
     <string name="APPLICATION_SHARED_PREF">APPLICATION_SHARED_PREF</string>
+    <string name="topics">Topics</string>
+    <string name="courses">Courses</string>
+    <string name="courses_lowercase">courses</string>
+    <string name="lectures_underscore">lectures</string>
 </resources>

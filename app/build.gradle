@@ -26,6 +26,15 @@ android {
             buildConfigField 'String', 'BASE_URL', '\"http://10.0.2.2:8080/\"'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 
 dependencies {
@@ -38,6 +47,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    // Lifecycle (for activityViewModels())
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
     // Navigation Component
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.0-alpha04"

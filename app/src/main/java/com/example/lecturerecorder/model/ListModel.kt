@@ -12,23 +12,43 @@ data class ListElement(
     val title: String,
     val description: String?,
     val info: String?,
-    val id: String
+    val id: Int
 )
 
 data class TopicPost(
-    @SerializedName("Name")
+    @SerializedName("name")
     val name: String,
-    @SerializedName("Description")
+    @SerializedName("description")
     val description: String
 )
 
 data class TopicResponse(
-    @SerializedName("ID")
+    @SerializedName("id")
     val id: Int,
-    @SerializedName("Name")
+    @SerializedName("name")
     val name: String,
-    @SerializedName("Description")
+    @SerializedName("description")
     val description: String,
-    @SerializedName("Courses")
+    @SerializedName("courses")
     val courses: Int
+)
+
+data class CoursePost(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("description")
+    val description: String
+)
+
+data class CourseResponse(
+    @SerializedName("id")
+    val id: Int,
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("description")
+    val description: String,
+    @SerializedName("audios")
+    val audios: Int,
+    @SerializedName("topic")
+    val topic: Int
 )
