@@ -15,7 +15,14 @@ data class ListElement(
     val id: String
 )
 
-data class Topic(
+data class TopicPost(
+    @SerializedName("Name")
+    val name: String,
+    @SerializedName("Description")
+    val description: String
+)
+
+data class TopicResponse(
     @SerializedName("ID")
     val id: Int,
     @SerializedName("Name")

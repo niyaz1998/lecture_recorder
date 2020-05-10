@@ -10,4 +10,6 @@
     <string name="save_record">Save Record</string>
     <string name="checking_sign_in">Checking Sign In</string>
     <string name="login_failed">Login Failed</string>
+    <string name="AUTH_TOKEN">AUTH_TOKEN_LECTURERECORDER</string>
+    <string name="APPLICATION_SHARED_PREF">APPLICATION_SHARED_PREF</string>
 </resources>

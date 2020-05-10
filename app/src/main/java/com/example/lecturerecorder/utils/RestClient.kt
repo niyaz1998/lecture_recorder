@@ -1,6 +1,7 @@
 package com.example.lecturerecorder.utils
 
 import com.example.lecturerecorder.BuildConfig
+import com.example.lecturerecorder.model.AuthService
 import com.example.lecturerecorder.model.ListService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -11,9 +12,17 @@ import java.util.concurrent.TimeUnit
 object RestClient {
 
     private val okHttpBuilder: OkHttpClient.Builder = OkHttpClient.Builder().apply {
-        connectTimeout(60, TimeUnit.SECONDS)
-        readTimeout(60, TimeUnit.SECONDS)
-        writeTimeout(60, TimeUnit.SECONDS)
+        connectTimeout(10, TimeUnit.SECONDS)
+        readTimeout(10, TimeUnit.SECONDS)
+        writeTimeout(10, TimeUnit.SECONDS) // TODO restore 1 minute timer
+        addInterceptor{
+            it.proceed(
+                it.request()
+                    .newBuilder()
+                    .addHeader("Authorization", "Bearer " + getAuthToken())
+                    .build()
+            )
+        }
     }
 
     private val retrofit = Retrofit.Builder().apply {
@@ -24,8 +33,10 @@ object RestClient {
     }.build()
 
     var listService: ListService
+    var authService: AuthService
 
     init {
         listService = retrofit.create(ListService::class.java)
+        authService = retrofit.create(AuthService::class.java)
     }
 }

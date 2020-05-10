@@ -14,9 +14,10 @@ import com.example.lecturerecorder.R
 import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.model.ListElement
 import com.example.lecturerecorder.model.ListElementType
-import com.example.lecturerecorder.model.Topic
+import com.example.lecturerecorder.model.TopicResponse
 import com.example.lecturerecorder.utils.RestClient
 import com.example.lecturerecorder.utils.SpacedDividerItemDecoration
+import com.example.lecturerecorder.utils.parseHttpErrorMessage
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -86,15 +87,15 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
                 .subscribe(this::handleResponse, this::handleError))
     }
 
-    private fun handleResponse(topics: List<Topic>) {
+    private fun handleResponse(topics: List<TopicResponse>) {
         testData = topics.map{ ListElement(ListElementType.Detailed, it.name, it.description, it.courses.toString()+" courses", it.id.toString())}
         viewAdapter = ListAdapter(testData, this)
         recyclerView.adapter = viewAdapter
     }
 
     private fun handleError(error: Throwable) {
-        //Log.d(TAG, error.localizedMessage)
-        Toast.makeText(context, "Error ${error.localizedMessage}", Toast.LENGTH_SHORT).show()
+        val message = parseHttpErrorMessage(error)
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
