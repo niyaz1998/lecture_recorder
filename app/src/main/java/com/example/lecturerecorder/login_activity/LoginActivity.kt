@@ -7,10 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.AuthCredentials
-import com.example.lecturerecorder.model.ErrorResponse
 import com.example.lecturerecorder.model.LoginResponse
 import com.example.lecturerecorder.model.RegisterResponse
 import com.example.lecturerecorder.utils.RestClient
@@ -30,8 +28,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.HttpException
-import java.io.IOException
-import java.lang.Exception
 
 
 class LoginActivity : AppCompatActivity() {
