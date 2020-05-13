@@ -2,7 +2,7 @@ package com.example.lecturerecorder.recorder_activity
 
 import android.media.MediaRecorder
 import android.util.Log
-import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.model.NoteResponse
 import java.io.IOException
 import java.util.*
 
@@ -14,7 +14,7 @@ private const val LOG_TAG = "RecorderViewModel"
 class RecorderViewModel(
     private val fileName: String,
     private val view: RecorderActivity,
-    private var notes: MutableList<Note>
+    private var notes: MutableList<NoteResponse>
 ) {
     private var recorder: MediaRecorder? = null
     private var state: RecorderState = RecorderState.NOT_STARTED
@@ -97,12 +97,20 @@ class RecorderViewModel(
     }
 
     fun addNote() {
-        notes.add(notes.size, Note("", getSecondsFromStartTime()))
+        notes.add(
+            notes.size,
+            NoteResponse(
+                text = "",
+                timestamp = getSecondsFromStartTime().toInt(),
+                lectureId = 0,
+                picture = ""
+            )
+        )
         view.showNotesList(notes)
     }
 
-    private fun getSecondsFromStartTime(): Long =
-        (Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000
+    private fun getSecondsFromStartTime(): Int =
+        ((Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000).toInt()
 
     fun onNoteRemove(index: Int) {
         notes.removeAt(index)
@@ -118,7 +126,7 @@ class RecorderViewModel(
         Log.d("Niyaz", fileName)
 
         notes.forEach {
-            Log.d("Niyaz", "${it.seconds}:${it.text}")
+            Log.d("Niyaz", "${it.timestamp}:${it.text}")
         }
     }
 }

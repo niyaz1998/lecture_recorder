@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lecturerecorder.R
-import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.model.NoteResponse
 import com.example.lecturerecorder.utils.formatTime
 
 
 class ReadNotesAdapter(
-    private val notes: List<Note>
+    private val notes: List<NoteResponse>
 ) :
     RecyclerView.Adapter<ReadNotesAdapter.MyViewHolder>() {
 
@@ -26,7 +26,7 @@ class ReadNotesAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.tTime.text = formatTime(notes[position].seconds)
+        holder.tTime.text = formatTime(notes[position].timestamp)
         holder.tNoteText.text = notes[position].text
         holder.tIndex.text = (position + 1).toString()
     }
