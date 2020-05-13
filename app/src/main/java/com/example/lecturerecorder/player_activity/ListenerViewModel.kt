@@ -3,6 +3,7 @@ package com.example.lecturerecorder.player_activity
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Handler
+import android.util.Log
 import android.widget.SeekBar
 import com.example.lecturerecorder.model.LectureRecord
 
@@ -17,7 +18,6 @@ class ListenerViewModel(
     private var buttonState: MainButtonState = MainButtonState.STOPPED
 
     init {
-        mPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         initSeekBarListener()
         getAudioStats()
     }
@@ -80,6 +80,7 @@ class ListenerViewModel(
 
     private fun initMediaPlayer() {
         mPlayer = MediaPlayer()
+        mPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
             mPlayer!!.setDataSource(lectureRecord.fileLocation)
             mPlayer!!.prepare()
@@ -100,6 +101,14 @@ class ListenerViewModel(
             mHandler.postDelayed(mRunnable!!, 1000)
         }
         mHandler.postDelayed(mRunnable!!, 1000)
+
+
+        for (i in lectureRecord.notes.indices) {
+            listenerActivity.addDroplet(
+                i + 1,
+                lectureRecord.notes[i].seconds.toFloat() / mSeekBar.max.toFloat()
+            )
+        }
     }
 
     private fun getAudioStats() {

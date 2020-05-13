@@ -31,20 +31,37 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/droplets"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/bMain" />
+
+        <RelativeLayout
+            android:id="@+id/droplets"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/seekBar"
+            app:layout_constraintStart_toStartOf="@+id/seekBar"
+            app:layout_constraintTop_toBottomOf="@id/seekBar">
+
+            <include
+                android:visibility="invisible"
+                layout="@layout/seek_bar_droplet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="TextView"
             app:layout_constraintBottom_toBottomOf="@+id/bMain"
             app:layout_constraintEnd_toStartOf="@+id/bMain"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bMain" />
+            app:layout_constraintTop_toTopOf="@+id/bMain"
+            tools:text="TextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
