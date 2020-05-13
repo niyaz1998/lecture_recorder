@@ -49,7 +49,7 @@ class RecorderViewModel(
     }
 
     fun onSavePressed() {
-        printData()
+        view.sendFile()
     }
 
     private fun startRecording() {

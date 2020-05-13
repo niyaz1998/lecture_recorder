@@ -4,7 +4,6 @@ import com.example.lecturerecorder.BuildConfig
 import com.example.lecturerecorder.model.AuthService
 import com.example.lecturerecorder.model.ListService
 import com.google.gson.GsonBuilder
-import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -21,7 +20,7 @@ object RestClient {
         writeTimeout(10, TimeUnit.SECONDS) // TODO restore 1 minute timer
         followRedirects(true)
         followSslRedirects(true)
-        addInterceptor{
+        addInterceptor {
             it.proceed(
                 it.request()
                     .newBuilder()
@@ -29,8 +28,9 @@ object RestClient {
                     .build()
             )
         }
-        addInterceptor{
-            var request: Request = it.request() // Very Terrible Workaround, But OkHttp Won't support it natively
+        addInterceptor {
+            var request: Request =
+                it.request() // Very Terrible Workaround, But OkHttp Won't support it natively
             var response: Response = it.proceed(it.request())
             if (response.code() == 307 || response.code() == 308) {
                 request = request.newBuilder()
@@ -40,6 +40,14 @@ object RestClient {
             }
             response
         }
+        /*
+        addInterceptor {
+            val original = it.request();
+            val requestBuilder = original.newBuilder().method(original.method(), original.body());
+            val request = requestBuilder.build();
+            it.proceed(request);
+        }
+         */
     }
 
     private val retrofit = Retrofit.Builder().apply {

@@ -1,11 +1,10 @@
 package com.example.lecturerecorder.view
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.lecturerecorder.R
@@ -52,7 +51,7 @@ class MainActivity : AppCompatActivity(), NavigationContract.Container {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_favorite -> {
-            Toast.makeText(this,"Like Button Selected", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Like Button Selected", Toast.LENGTH_LONG).show()
             setActionBarText("New action bar text")
             true
         }
@@ -76,6 +75,7 @@ class MainActivity : AppCompatActivity(), NavigationContract.Container {
     override fun goToRecorderView(courseId: Int) {
         startActivity(Intent(this, RecorderActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("courseId", courseId)
         })
     }
 
