@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
-import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.model.NoteResponse
 import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_recorder.*
 
@@ -97,7 +97,7 @@ class RecorderActivity : AppCompatActivity() {
         }
     }
 
-    fun showNotesList(notes: List<Note>) {
+    fun showNotesList(notes: List<NoteResponse>) {
         val viewAdapter = NotesAdapter(notes,
             { viewModel?.onNoteRemove(it) },
             { index, text -> viewModel?.onTextChangedRemove(index, text) }

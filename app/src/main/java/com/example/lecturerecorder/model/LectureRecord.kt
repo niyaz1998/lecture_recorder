@@ -6,6 +6,6 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class LectureRecord(
     var name: String,
-    var notes: List<Note>,
+    var notes: List<NoteResponse>,
     var fileLocation: String
 ) : Parcelable

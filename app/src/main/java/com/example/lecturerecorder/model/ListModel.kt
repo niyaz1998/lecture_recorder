@@ -1,6 +1,8 @@
 package com.example.lecturerecorder.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 // UI ELEMENTS #############################################
 
@@ -84,11 +86,14 @@ data class LectureResponse(
     val note: List<NoteResponse>
 )
 
+@Parcelize
 data class NoteResponse( // FIXME: already implemented in Note.kt
     @SerializedName("lecture_id")
     val lectureId: Int,
     @SerializedName("text")
-    val text: String,
+    var text: String,
+    @SerializedName("timestamp")
+    val timestamp: Int, // in seconds
     @SerializedName("picture")
     val picture: String
-)
+) : Parcelable

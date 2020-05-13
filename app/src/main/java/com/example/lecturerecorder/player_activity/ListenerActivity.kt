@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.LectureRecord
-import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.model.NoteResponse
 import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_listener.*
 
@@ -19,12 +19,12 @@ import kotlinx.android.synthetic.main.activity_listener.*
 var stubLecture = LectureRecord(
     name = "stub lecture",
     notes = listOf(
-        Note(seconds = 10, text = "note 1"),
-        Note(seconds = 20, text = "note 2"),
-        Note(seconds = 30, text = "note 3"),
-        Note(seconds = 40, text = "note 4"),
-        Note(seconds = 50, text = "note 5"),
-        Note(seconds = 60, text = "note 6")
+        NoteResponse(timestamp = 10, text = "note 1", lectureId = 0, picture = ""),
+        NoteResponse(timestamp = 20, text = "note 2", lectureId = 0, picture = ""),
+        NoteResponse(timestamp = 30, text = "note 3", lectureId = 0, picture = ""),
+        NoteResponse(timestamp = 40, text = "note 4", lectureId = 0, picture = ""),
+        NoteResponse(timestamp = 50, text = "note 5", lectureId = 0, picture = ""),
+        NoteResponse(timestamp = 60, text = "note 6", lectureId = 0, picture = "")
     ),
     fileLocation = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3"
 )

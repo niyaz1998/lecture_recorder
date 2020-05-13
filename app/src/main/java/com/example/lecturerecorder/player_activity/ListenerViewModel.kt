@@ -106,7 +106,7 @@ class ListenerViewModel(
         for (i in lectureRecord.notes.indices) {
             listenerActivity.addDroplet(
                 i + 1,
-                lectureRecord.notes[i].seconds.toFloat() / mSeekBar.max.toFloat()
+                lectureRecord.notes[i].timestamp.toFloat() / mSeekBar.max.toFloat()
             )
         }
     }
