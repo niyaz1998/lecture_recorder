@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.LectureRecord
 import com.example.lecturerecorder.model.Note
-import com.example.lecturerecorder.model.ReadNotesAdapter
 import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_listener.*
 
@@ -55,7 +54,10 @@ class ListenerActivity : AppCompatActivity() {
 
         rv_read_notes.apply {
             layoutManager = LinearLayoutManager(this@ListenerActivity)
-            adapter = ReadNotesAdapter(lectureRecord.notes)
+            adapter =
+                ReadNotesAdapter(
+                    lectureRecord.notes
+                )
         }
 
         bMain.setOnClickListener {
