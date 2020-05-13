@@ -75,6 +75,7 @@ data class LecturePut(
     val name: String
 )
 
+@Parcelize
 data class LectureResponse(
     @SerializedName("name")
     val name: String,
@@ -84,7 +85,7 @@ data class LectureResponse(
     val courseId:  Int,
     @SerializedName("notes")
     val note: List<NoteResponse>
-)
+) : Parcelable
 
 @Parcelize
 data class NoteResponse( // FIXME: already implemented in Note.kt

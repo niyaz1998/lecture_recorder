@@ -109,8 +109,8 @@ class RecorderViewModel(
         view.showNotesList(notes)
     }
 
-    private fun getSecondsFromStartTime(): Long =
-        (Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000
+    private fun getSecondsFromStartTime(): Int =
+        ((Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000).toInt()
 
     fun onNoteRemove(index: Int) {
         notes.removeAt(index)

@@ -83,7 +83,7 @@ class RecorderActivity : AppCompatActivity() {
         viewModel?.onStop()
     }
 
-    fun setTime(seconds: Long) {
+    fun setTime(seconds: Int) {
         runOnUiThread {
             textTimer.text = formatTime(seconds)
         }

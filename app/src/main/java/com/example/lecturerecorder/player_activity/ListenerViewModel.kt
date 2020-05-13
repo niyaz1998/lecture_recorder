@@ -5,10 +5,10 @@ import android.media.MediaPlayer
 import android.os.Handler
 import android.util.Log
 import android.widget.SeekBar
-import com.example.lecturerecorder.model.LectureRecord
+import com.example.lecturerecorder.model.LectureResponse
 
 class ListenerViewModel(
-    var lectureRecord: LectureRecord,
+    var lectureRecord: LectureResponse,
     var listenerActivity: ListenerActivity,
     var mSeekBar: SeekBar
 ) {
@@ -82,7 +82,7 @@ class ListenerViewModel(
         mPlayer = MediaPlayer()
         mPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
-            mPlayer!!.setDataSource(lectureRecord.fileLocation)
+            mPlayer!!.setDataSource(lectureRecord.audioFile)
             mPlayer!!.prepare()
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -103,10 +103,10 @@ class ListenerViewModel(
         mHandler.postDelayed(mRunnable!!, 1000)
 
 
-        for (i in lectureRecord.notes.indices) {
+        for (i in lectureRecord.note.indices) {
             listenerActivity.addDroplet(
                 i + 1,
-                lectureRecord.notes[i].timestamp.toFloat() / mSeekBar.max.toFloat()
+                lectureRecord.note[i].timestamp.toFloat() / mSeekBar.max.toFloat()
             )
         }
     }

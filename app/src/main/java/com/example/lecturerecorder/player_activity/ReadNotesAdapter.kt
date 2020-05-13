@@ -26,7 +26,7 @@ class ReadNotesAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.tTime.text = formatTime(notes[position].timestamp.toLong())
+        holder.tTime.text = formatTime(notes[position].timestamp)
         holder.tNoteText.text = notes[position].text
         holder.tIndex.text = (position + 1).toString()
     }

@@ -35,7 +35,7 @@ class NotesAdapter(
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val index = myDataset.size - position - 1
 
-        holder.tTime.text = formatTime(myDataset[index].timestamp.toLong())
+        holder.tTime.text = formatTime(myDataset[index].timestamp)
         holder.bRemove.setOnClickListener { onRemovePressed(index) }
         // holder.etNote.setText(myDataset[index].text)
         /*

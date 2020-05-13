@@ -10,15 +10,15 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
-import com.example.lecturerecorder.model.LectureRecord
+import com.example.lecturerecorder.model.LectureResponse
 import com.example.lecturerecorder.model.NoteResponse
 import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_listener.*
 
 
-var stubLecture = LectureRecord(
+var stubLecture = LectureResponse(
     name = "stub lecture",
-    notes = listOf(
+    note = listOf(
         NoteResponse(timestamp = 10, text = "note 1", lectureId = 0, picture = ""),
         NoteResponse(timestamp = 20, text = "note 2", lectureId = 0, picture = ""),
         NoteResponse(timestamp = 30, text = "note 3", lectureId = 0, picture = ""),
@@ -26,7 +26,8 @@ var stubLecture = LectureRecord(
         NoteResponse(timestamp = 50, text = "note 5", lectureId = 0, picture = ""),
         NoteResponse(timestamp = 60, text = "note 6", lectureId = 0, picture = "")
     ),
-    fileLocation = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3"
+    audioFile = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3",
+    courseId = 0
 )
 
 class ListenerActivity : AppCompatActivity() {
@@ -35,7 +36,7 @@ class ListenerActivity : AppCompatActivity() {
         var ARGUMENTS = "ARGUMENTS"
     }
 
-    lateinit var lectureRecord: LectureRecord
+    lateinit var lectureRecord: LectureResponse
     lateinit var listenerViewModel: ListenerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +44,7 @@ class ListenerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_listener)
 
         lectureRecord =
-            if (intent.extras?.getParcelable<LectureRecord>(ARGUMENTS) != null)
+            if (intent.extras?.getParcelable<LectureResponse>(ARGUMENTS) != null)
                 intent.extras?.getParcelable(ARGUMENTS)!! else stubLecture
 
         listenerViewModel = ListenerViewModel(
@@ -56,7 +57,7 @@ class ListenerActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@ListenerActivity)
             adapter =
                 ReadNotesAdapter(
-                    lectureRecord.notes
+                    lectureRecord.note
                 )
         }
 
@@ -75,7 +76,7 @@ class ListenerActivity : AppCompatActivity() {
     }
 
     fun setTime(seconds: Int) {
-        tvTime.text = formatTime(seconds = seconds.toLong())
+        tvTime.text = formatTime(seconds = seconds)
     }
 
     override fun onDestroy() {
