@@ -4,7 +4,7 @@ fun formatTime(seconds: Long): String {
     val minutes = seconds / 60
     val hours = minutes / 60
 
-    return "${formatForTime(hours)}:${formatForTime(minutes)}:${formatForTime(seconds)}"
+    return "${formatForTime(hours)}:${formatForTime(minutes)}:${formatForTime(seconds % 60)}"
 }
 
 private fun formatForTime(value: Long): String {

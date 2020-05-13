@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.lecturerecorder.MainActivity
 import com.example.lecturerecorder.R
+import com.example.lecturerecorder.player_activity.ListenerActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -69,7 +70,8 @@ class LoginActivity : AppCompatActivity() {
             tv_checking_sign_in.visibility = View.GONE
             sign_in_button.visibility = View.VISIBLE
         } else {
-            startActivity(Intent(this, MainActivity::class.java).apply {
+            // TODO: change back to main activity
+            startActivity(Intent(this, ListenerActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             })
         }
