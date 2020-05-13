@@ -16,4 +16,8 @@
     <string name="courses">Courses</string>
     <string name="courses_lowercase">courses</string>
     <string name="lectures_underscore">lectures</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
+    <string name="name">Name</string>
+    <string name="description">Description</string>
 </resources>

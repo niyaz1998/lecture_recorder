@@ -18,10 +18,10 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".view.MainActivity"
-            android:theme="@style/AppTheme.Launcher" />
+            android:name=".view.MainActivity" />
 
-        <activity android:name=".login_activity.LoginActivity">
+        <activity android:name=".login_activity.LoginActivity"
+                  android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -14,6 +14,7 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
 
     interface OnSelectListener {
         fun onSelect(position: Int)
+        fun onLongSelect(position: Int)
     }
 
     interface ListElementViewHolder {
@@ -21,7 +22,7 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
     }
 
     class DetailedViewHolder(inflater: LayoutInflater, parent: ViewGroup, listener: OnSelectListener) : RecyclerView.ViewHolder(inflater.inflate(
-        R.layout.list_element_detailed, parent, false)), View.OnClickListener, ListElementViewHolder {
+        R.layout.list_element_detailed, parent, false)), View.OnClickListener, View.OnLongClickListener, ListElementViewHolder {
         private var mTitleView: TextView? = null
         private var mDescriptionView: TextView? = null
         private var mInfoView: TextView? = null
@@ -33,6 +34,7 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
             mInfoView = itemView.findViewById(R.id.list_info)
             onSelectListener = listener
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         override fun bind(element: ListElement) {
@@ -44,10 +46,15 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
         override fun onClick(v: View?) {
             onSelectListener?.onSelect(adapterPosition)
         }
+
+        override fun onLongClick(v: View?): Boolean {
+            onSelectListener?.onLongSelect(adapterPosition)
+            return true
+        }
     }
 
     class ShortViewHolder(inflater: LayoutInflater, parent: ViewGroup, listener: OnSelectListener) : RecyclerView.ViewHolder(inflater.inflate(
-        R.layout.list_element_short, parent, false)), View.OnClickListener, ListElementViewHolder {
+        R.layout.list_element_short, parent, false)), View.OnClickListener, View.OnLongClickListener, ListElementViewHolder {
         private var mTitleView: TextView? = null
         private var onSelectListener: OnSelectListener? = null
 
@@ -55,6 +62,7 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
             mTitleView = itemView.findViewById(R.id.list_title)
             onSelectListener = listener
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         override fun bind(element: ListElement) {
@@ -63,6 +71,11 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
 
         override fun onClick(v: View?) {
             onSelectListener?.onSelect(adapterPosition)
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            onSelectListener?.onLongSelect(adapterPosition)
+            return true
         }
     }
 

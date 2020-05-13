@@ -1,5 +1,6 @@
 package com.example.lecturerecorder.view
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -9,12 +10,12 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.contract.NavigationContract
+import com.example.lecturerecorder.recorder_activity.RecorderActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity(), NavigationContract.Container {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -66,4 +67,17 @@ class MainActivity : AppCompatActivity(), NavigationContract.Container {
     override fun setActionBarText(text: String) {
         supportActionBar?.title = text
     }
+
+    override fun goToPreviewView(lectureId: Int) {
+        Toast.makeText(this, "Open Preview View Here", Toast.LENGTH_SHORT).show()
+
+    }
+
+    override fun goToRecorderView(courseId: Int) {
+        startActivity(Intent(this, RecorderActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        })
+    }
+
+
 }

@@ -4,7 +4,10 @@ import com.example.lecturerecorder.BuildConfig
 import com.example.lecturerecorder.model.AuthService
 import com.example.lecturerecorder.model.ListService
 import com.google.gson.GsonBuilder
+import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,6 +19,8 @@ object RestClient {
         connectTimeout(10, TimeUnit.SECONDS)
         readTimeout(10, TimeUnit.SECONDS)
         writeTimeout(10, TimeUnit.SECONDS) // TODO restore 1 minute timer
+        followRedirects(true)
+        followSslRedirects(true)
         addInterceptor{
             it.proceed(
                 it.request()
@@ -23,6 +28,17 @@ object RestClient {
                     .addHeader("Authorization", "Bearer " + getAuthToken())
                     .build()
             )
+        }
+        addInterceptor{
+            var request: Request = it.request() // Very Terrible Workaround, But OkHttp Won't support it natively
+            var response: Response = it.proceed(it.request())
+            if (response.code() == 307 || response.code() == 308) {
+                request = request.newBuilder()
+                    .url(BuildConfig.BASE_URL.dropLast(1) + response.header("Location"))
+                    .build()
+                response = it.proceed(request)
+            }
+            response
         }
     }
 

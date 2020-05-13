@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.CourseListFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -11,5 +12,38 @@
         android:layout_height="match_parent">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <RelativeLayout
+        android:id="@+id/empty_list_info"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone">
+        <ImageView
+            android:id="@+id/empty_icon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/empty_box"/>
+        <TextView
+            android:id="@+id/empty_list_text"
+            android:layout_below="@+id/empty_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            tools:text="Empty text here"/>
+    </RelativeLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="Add"
+        android:textColor="@color/white"
+        app:icon="@drawable/ic_plus"
+        app:iconTint="@color/white"
+        android:layout_gravity="bottom|end"
+        android:backgroundTint="@color/colorPrimary"/>
 
 </FrameLayout>
