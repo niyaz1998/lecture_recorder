@@ -12,17 +12,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.contract.NavigationContract
-import com.example.lecturerecorder.model.CourseResponse
-import com.example.lecturerecorder.model.LectureResponse
+import com.example.lecturerecorder.model.*
 import com.example.lecturerecorder.view.adapters.ListAdapter
-import com.example.lecturerecorder.model.ListElement
-import com.example.lecturerecorder.model.ListElementType
 import com.example.lecturerecorder.utils.RestClient
 import com.example.lecturerecorder.utils.SpacedDividerItemDecoration
 import com.example.lecturerecorder.utils.parseHttpErrorMessage
@@ -36,7 +34,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
 
-class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
+class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
 
 
     private lateinit var recyclerView: RecyclerView
@@ -76,41 +74,42 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             SpacedDividerItemDecoration(context)
         )
 
-        setActionBarTitle("Lectures")
+        setActionBarTitle("Subscriptions")
 
         val fab = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add)
-        fab.setOnClickListener {
-            (activity as NavigationContract.Container).goToRecorderView(model.selectedCourseId.value!!)
-        }
+        fab.visibility = getVisibGone(true)
+//        fab.setOnClickListener {
+//            (activity as NavigationContract.Container).goToRecorderView(model.selectedCourseId.value!!)
+//        }
 
-        (activity as NavigationContract.Container).setHeaderVisibility(true)
-        (activity as NavigationContract.Container).setHeaderTitle(model.selectedCourseName.value?:"")
+        (activity as NavigationContract.Container).setHeaderVisibility(false)
 
         loadAndSetData()
     }
 
     fun loadAndSetData() {
         compositeDisposable.add(
-            RestClient.listService.getLectures(model.selectedCourseId.value?:return@loadAndSetData)
+            RestClient.listService.getSubs()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(this::handleResponse, this::handleError))
     }
 
-    private fun handleResponse(lectures: List<LectureResponse>?) {
-        val mappedList = lectures?.map{ ListElement(ListElementType.Short, it.name, null, null, it.courseId)}
+    private fun handleResponse(response: SubResponse) {
+
+        val mappedList = response.courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "", it.id)}
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
             viewAdapter = ListAdapter(emptyList(), this)
             recyclerView.adapter = viewAdapter
-            model.lectures.postValue(emptyList())
+            model.subscriptions.postValue(emptyList())
             showEmptyListIndicator(true)
             setEmptyListText("No lectures available here")
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
-            model.lectures.postValue(mappedList)
+            model.subscriptions.postValue(mappedList)
             showEmptyListIndicator(false)
         }
     }
@@ -140,25 +139,6 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         Toast.makeText(requireContext(), "Lecture Delete Error", Toast.LENGTH_SHORT).show()
     }
 
-    // SUBSCRIBE TO COURSE ###########################################################################
-
-    private fun subscribeCourseRequest(courseId: Int) {
-        compositeDisposable.add(
-            RestClient.listService.subscribeCourse(courseId)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(this::courseSubscribed, this::courseSubscribeError))
-    }
-
-    private fun courseSubscribed() {
-        Toast.makeText(requireContext(), "Course Subscribed", Toast.LENGTH_SHORT).show()
-    }
-
-
-    private fun courseSubscribeError(error: Throwable) {
-        Toast.makeText(requireContext(), "Course Subscribe Error", Toast.LENGTH_SHORT).show()
-    }
-
     // UTILS ###########################################################################
 
     override fun onDestroy() {
@@ -176,16 +156,15 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     override fun onSelect(position: Int) {
-        val elem = model.lectures.value?.get(position)?:return@onSelect
-        (activity as NavigationContract.Container).goToPreviewView(elem.id)
-        //Toast.makeText(requireContext(), "Open Preview Activity Here", Toast.LENGTH_LONG).show()
+        val elem = model.subscriptions.value?.get(position)?:return@onSelect
+        model.selectedCourseId.postValue(elem.id)
+        view?.findNavController()?.navigate(R.id.action_subscriptionsFragment_to_lectureListFragment)
     }
 
     override fun onLongSelect(position: Int) {
         val elem = model.lectures.value?.get(position)?:return@onLongSelect
         createDeleteConfirmation(elem.id, elem.title)
     }
-
 
     fun getVisibGone(s: Boolean): Int {
         return if (s) {View.GONE} else {View.VISIBLE}
@@ -199,34 +178,6 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         requireView().findViewById<TextView>(R.id.empty_list_text).text = text
     }
 
-//    private fun createEditDialog(id: Int, name: String, description: String) {
-//        val builder = AlertDialog.Builder(requireContext())
-//        builder.setTitle("Edit Topic")
-//        val innerView: View = LayoutInflater.from(requireContext())
-//            .inflate(R.layout.creation_dialog_layout, null)
-//
-//        val nameField = innerView.findViewById<TextInputLayout>(R.id.name_field)
-//        val descrField = innerView.findViewById<TextInputLayout>(R.id.description_field)
-//        nameField.editText?.setText(name)
-//        descrField.editText?.setText(description)
-//
-//        builder.setView(innerView)
-//        builder.setPositiveButton("Save") { dialog, which ->
-//
-//            val nt = nameField.editText?.text.toString().trim()
-//            val dt = descrField.editText?.text.toString().trim()
-//            putTopicRequest(id, nt, dt)
-//        }
-//
-//        builder.setNegativeButton("Delete") {dialog, _->
-//            createDeleteConfirmation(id, name)
-//            dialog.dismiss()
-//        }
-//
-//        builder.setNeutralButton("Cancel") {_, _->} // do nothing
-//        builder.show()
-//    }
-
     private fun createDeleteConfirmation(lectureId: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Are you sure?")
@@ -239,21 +190,17 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     override fun subscribeClicked() {
-        subscribeCourseRequest(model.selectedCourseId.value?:return)
     }
 
     override fun navigateToAll() {
-        model.isPersonalFilterEnabled.postValue(false)
-        loadAndSetData()
-    }
-
-    override fun navigateToSubscriptions() {
-        model.isPersonalFilterEnabled.postValue(true)
-        findNavController().navigate(R.id.action_lectureListFragment_to_subscriptionsFragment)
+        findNavController().navigate(R.id.action_subscriptionsFragment_to_topicListFragment)
     }
 
     override fun navigateToPersonal() {
-        model.isPersonalFilterEnabled.postValue(false)
-        loadAndSetData()
+        findNavController().navigate(R.id.action_subscriptionsFragment_to_topicListFragment)
+    }
+
+    override fun navigateToSubscriptions() {
+
     }
 }

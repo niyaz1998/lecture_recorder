@@ -71,4 +71,22 @@ interface ListService {
 //    @GET("api/v1/files/{fileName}")
 //    fun getFile(@Path("fileName") fileName: String): Filedata // Probably should be handled directly, not via retrofit
 
+
+    // SUBSCRIPTIONS
+
+    @POST("api/v1/subscribes")
+    fun subscribeTopic(@Query("topic_id") topicId: Int): Completable
+
+    @POST("api/v1/subscribes")
+    fun subscribeCourse(@Query("course_id") courseId: Int): Completable
+
+    @DELETE("api/v1/subscribes")
+    fun unsubTopic(@Query("topic_id") topicId: Int): Completable
+
+    @DELETE("api/v1/subscribes")
+    fun unsubCourse(@Query("course_id") courseId: Int): Completable
+
+    @GET("api/v1/subscribes")
+    fun getSubs(): Single<SubResponse>
+
 }

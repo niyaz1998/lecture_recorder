@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.lecturerecorder.R
+import com.example.lecturerecorder.contract.NavigationContract
 import com.example.lecturerecorder.model.*
 import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.utils.RestClient
@@ -30,7 +31,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
 import org.w3c.dom.Text
 
-class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
+class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -56,7 +57,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
         compositeDisposable = CompositeDisposable()
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = ListAdapter(model.lectures.value?: emptyList(), this)
+        viewAdapter = ListAdapter(emptyList(), this)
 
         recyclerView = view.findViewById<RecyclerView>(list_container.id).apply {
             setHasFixedSize(true)
@@ -67,6 +68,8 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
         recyclerView.addItemDecoration(
             SpacedDividerItemDecoration(context)
         )
+
+        (activity as NavigationContract.Container).setHeaderVisibility(false)
 
         setActionBarTitle(getString(R.string.courses))
 
@@ -196,6 +199,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
     override fun onSelect(position: Int) {
         val elem = model.courses.value?.get(position)?:return@onSelect
         model.selectedCourseId.postValue(elem.id)
+        model.selectedCourseName.postValue(elem.title)
         view?.findNavController()?.navigate(R.id.action_courseListFragment_to_lectureListFragment)
     }
 
@@ -273,5 +277,21 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener {
         }
         builder.setNeutralButton("Cancel") {_, _->} // do nothing
         builder.show()
+    }
+
+    override fun subscribeClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun navigateToAll() {
+        model.isPersonalFilterEnabled.postValue(false)
+    }
+
+    override fun navigateToPersonal() {
+        model.isPersonalFilterEnabled.postValue(true)
+    }
+
+    override fun navigateToSubscriptions() {
+        model.isPersonalFilterEnabled.postValue(false)
     }
 }

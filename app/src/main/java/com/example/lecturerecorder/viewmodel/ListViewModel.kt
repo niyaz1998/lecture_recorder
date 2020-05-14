@@ -8,7 +8,11 @@ class ListViewModel: ViewModel() {
     val topics = MutableLiveData<List<ListElement>>(emptyList())
     val courses = MutableLiveData<List<ListElement>>(emptyList())
     val lectures = MutableLiveData<List<ListElement>>(emptyList())
+    val subscriptions = MutableLiveData<List<ListElement>>(emptyList())
+    val isPersonalFilterEnabled = MutableLiveData<Boolean>(false)
 
     val selectedTopicId = MutableLiveData<Int?>(null)
+    val selectedTopicName = MutableLiveData<String>("")
     val selectedCourseId = MutableLiveData<Int?>(null)
+    val selectedCourseName = MutableLiveData<String>("")
 }

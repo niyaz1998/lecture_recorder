@@ -10,9 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.lecturerecorder.R
+import com.example.lecturerecorder.contract.NavigationContract
 import com.example.lecturerecorder.model.ListElement
 import com.example.lecturerecorder.model.ListElementType
 import com.example.lecturerecorder.model.TopicPost
@@ -30,7 +32,7 @@ import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
 
 
-class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
+class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
@@ -41,7 +43,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+
     }
 
     override fun onCreateView(
@@ -75,6 +77,8 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
         fab.setOnClickListener {
             createAdditionDialog()
         }
+
+        (activity as NavigationContract.Container).setHeaderVisibility(false)
 
         loadAndSetData()
     }
@@ -180,18 +184,6 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
         (activity as AppCompatActivity).supportActionBar?.title = text;
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.topic_list_menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater?) {
-//        menu.clear() // clears all menu items..
-//        activity!!.menuInflater.inflate(R.menu.fragment_menu, menu)
-//        super.onCreateOptionsMenu(menu, inflater!!)
-//    }
-
     companion object {
         @JvmStatic
         fun newInstance() = TopicListFragment()
@@ -276,5 +268,24 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener {
         }
         builder.setNeutralButton("Cancel") {_, _->} // do nothing
         builder.show()
+    }
+
+    override fun subscribeClicked() {
+        // unreachable
+    }
+
+    override fun navigateToAll() {
+        model.isPersonalFilterEnabled.postValue(false)
+        loadAndSetData()
+    }
+
+    override fun navigateToPersonal() {
+        model.isPersonalFilterEnabled.postValue(true)
+        loadAndSetData()
+    }
+
+    override fun navigateToSubscriptions() {
+        model.isPersonalFilterEnabled.postValue(false)
+        findNavController().navigate(R.id.action_topicListFragment_to_subscriptionsFragment)
     }
 }

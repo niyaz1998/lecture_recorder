@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.CourseListFragment">
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list_container"
@@ -12,6 +13,8 @@
         android:layout_height="match_parent">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+
 
     <RelativeLayout
         android:id="@+id/empty_list_info"
@@ -43,7 +46,10 @@
         android:textColor="@color/white"
         app:icon="@drawable/ic_plus"
         app:iconTint="@color/white"
-        android:layout_gravity="bottom|end"
+        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+        android:layout_gravity="bottom|right"
+        app:layout_anchor="@id/list_container"
+        app:layout_anchorGravity="bottom|right|end"
         android:backgroundTint="@color/colorPrimary"/>
 
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

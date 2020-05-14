@@ -98,3 +98,11 @@ data class NoteResponse( // FIXME: already implemented in Note.kt
     @SerializedName("picture")
     val picture: String
 ) : Parcelable
+
+
+data class SubResponse (
+    @SerializedName("topics")
+    val topics: List<TopicResponse>,
+    @SerializedName("courses")
+    val courses: List<CourseResponse>
+)
