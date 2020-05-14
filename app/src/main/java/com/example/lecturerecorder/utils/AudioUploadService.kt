@@ -58,7 +58,7 @@ class AudioUploadService : JobIntentService() {
                 ).blockingGet()
                 emitter.onComplete()
                 sendNotes(response.id)
-                // HERE SENDING NOTE IS FINISHED
+                onLectureCreated()
             }, BackpressureStrategy.LATEST
         )
         mDisposable = fileObservable.subscribeOn(Schedulers.computation())
@@ -75,6 +75,12 @@ class AudioUploadService : JobIntentService() {
                     )
                 }
             ) { onSuccess() }
+    }
+
+    private fun onLectureCreated() {
+        val localIntent = Intent("com.example.lecturerecorder.AudioUploadService")
+        localIntent.putExtra("message", "lecture_created")
+        LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
     }
 
     private fun onErrors(throwable: Throwable) {
