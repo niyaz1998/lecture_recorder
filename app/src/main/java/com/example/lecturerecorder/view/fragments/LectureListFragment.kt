@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,7 +35,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
-import java.util.*
 
 class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
 
@@ -60,21 +60,8 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         return inflater.inflate(R.layout.fragment_recycler_list, container, false)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        activity?.unregisterReceiver(broadcastReceiver)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        broadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                loadAndSetData()
-            }
-        }
-        activity?.registerReceiver(broadcastReceiver, IntentFilter("com.example.lecturerecorder.AudioUploadService"))
 
         compositeDisposable = CompositeDisposable()
 
@@ -100,7 +87,9 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         }
 
         (activity as NavigationContract.Container).setHeaderVisibility(true)
-        (activity as NavigationContract.Container).setHeaderTitle(model.selectedCourseName.value?:"")
+        (activity as NavigationContract.Container).setHeaderTitle(
+            model.selectedCourseName.value ?: ""
+        )
 
         val srl = view.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
         srl.setOnRefreshListener {
@@ -108,6 +97,25 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         }
 
         loadAndSetData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                loadAndSetData()
+            }
+        }
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
+            broadcastReceiver,
+            IntentFilter("com.example.lecturerecorder.AudioUploadService")
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(broadcastReceiver)
     }
 
     fun loadAndSetData() {
@@ -177,7 +185,8 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             RestClient.listService.subscribeCourse(courseId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::courseSubscribed, this::courseSubscribeError))
+                .subscribe(this::courseSubscribed, this::courseSubscribeError)
+        )
     }
 
     private fun courseSubscribed() {
@@ -288,7 +297,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     override fun subscribeClicked() {
-        subscribeCourseRequest(model.selectedCourseId.value?:return)
+        subscribeCourseRequest(model.selectedCourseId.value ?: return)
     }
 
     override fun navigateToAll() {
