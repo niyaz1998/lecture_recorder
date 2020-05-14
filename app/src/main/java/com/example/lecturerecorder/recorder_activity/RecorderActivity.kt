@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +25,6 @@ class RecorderActivity : AppCompatActivity() {
     private var viewModel: RecorderViewModel? = null
     private var courseId: Int? = null
     private lateinit var fileName: String
-    private lateinit var name: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class RecorderActivity : AppCompatActivity() {
 
         courseId = intent.extras?.getInt("courseId")
 
-        name = "audio_${courseId}_${Calendar.getInstance().timeInMillis}"
+        val name = "audio_${courseId}_${Calendar.getInstance().timeInMillis}"
         fileName = "${externalCacheDir?.absolutePath}/$name.3gp"
 
         viewModel = RecorderViewModel(fileName, this, mutableListOf())
@@ -58,7 +58,7 @@ class RecorderActivity : AppCompatActivity() {
             adapter = viewAdapter
         }
 
-        bSave.setOnClickListener { viewModel?.onSavePressed() }
+        bSave.setOnClickListener { viewModel?.onSavePressed(etLectureName.text.toString()) }
 
         ActivityCompat.requestPermissions(
             this,
@@ -118,12 +118,32 @@ class RecorderActivity : AppCompatActivity() {
         bAddNote.isEnabled = enabled
     }
 
-    fun sendFile() {
+    fun sendFile(lectureName: String) {
         val mIntent = Intent(this, AudioUploadService::class.java)
         mIntent.putExtra("mFilePath", fileName)
         mIntent.putExtra("courseId", courseId)
-        mIntent.putExtra("name", name)
+        mIntent.putExtra("name", lectureName)
         AudioUploadService.enqueueWork(this, mIntent)
+    }
+
+    fun enableSubmitButton() {
+        bSave.isEnabled = true
+    }
+
+    fun checkLectureName(): Boolean {
+        val result = etLectureName.text.isNotEmpty()
+        if (!result) {
+            val toast = Toast.makeText(
+                applicationContext,
+                resources.getString(R.string.enter_lecture_name), Toast.LENGTH_SHORT
+            )
+            toast.show()
+        }
+        return result;
+    }
+
+    fun stop() {
+        onBackPressed()
     }
 }
 

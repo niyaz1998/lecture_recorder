@@ -38,6 +38,7 @@ class RecorderViewModel(
             state = RecorderState.RECORDED
             view.setButton(ButtonState.NULL)
             view.enableAddNodeButton(false)
+            view.enableSubmitButton()
         }
     }
 
@@ -48,8 +49,11 @@ class RecorderViewModel(
         recorder = null
     }
 
-    fun onSavePressed() {
-        view.sendFile()
+    fun onSavePressed(lectureName: String) {
+        if (view.checkLectureName()) {
+            view.sendFile(lectureName)
+            view.stop()
+        }
     }
 
     private fun startRecording() {

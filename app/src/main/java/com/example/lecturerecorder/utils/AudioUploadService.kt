@@ -49,14 +49,21 @@ class AudioUploadService : JobIntentService() {
             { emitter: FlowableEmitter<Double> ->
                 try {
                     apiService.createLecture(
-                        courseId, name,
+                        /*
+                    mapOf(
+                        "courseId" to createRequestBodyFromText(courseId.toString()),
+                        "name" to createRequestBodyFromText(name)
+                    ),
+                     // courseId, name,
+                     */
+                        createRequestBodyFromText(courseId.toString()),
+                        createRequestBodyFromText(name),
                         createMultipartBody(mFilePath, emitter)
                     ).blockingGet()
-                    emitter.onComplete()
                 } catch (e: Throwable) {
-                    Log.e(TAG, "create lecture error")
-                    e.printStackTrace()
+                    Log.e(TAG, e.localizedMessage)
                 }
+                emitter.onComplete()
             }, BackpressureStrategy.LATEST
         )
         mDisposable = fileObservable.subscribeOn(Schedulers.computation())

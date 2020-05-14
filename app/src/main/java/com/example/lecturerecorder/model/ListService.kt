@@ -3,6 +3,7 @@ package com.example.lecturerecorder.model
 import io.reactivex.Completable
 import io.reactivex.Single
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface ListService {
@@ -47,12 +48,15 @@ interface ListService {
     fun getLectures(@Query("course_id") courseId: Int): Single<List<LectureResponse>?>
 
     @Multipart
-    @POST("api/v1/lectures")
+    // @FormUrlEncoded
+    @POST("api/v1/lectures/")
     fun createLecture(
-        @Query("course_id") courseId: Int,
-        @Query("name") name: String,
+        @Part("course_id") courseId: RequestBody,
+        @Part("name") name: RequestBody,
+        // @Part("email")  mEmail: RequestBody,
+        // @PartMap params: Map<String, RequestBody>,
         @Part file: MultipartBody.Part?
-    ) : Single<LectureResponse>
+    ): Single<LectureResponse>
 //
 //    @POST("api/v1/lectures/{lectureId}")
 //    fun putLecture(@Query("lecture_id") lectureId: Int, @Multipart("") course: LecturePost)
