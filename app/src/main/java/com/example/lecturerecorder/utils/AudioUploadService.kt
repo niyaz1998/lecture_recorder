@@ -51,20 +51,13 @@ class AudioUploadService : JobIntentService() {
         val apiService: ListService = RestClient.listService
         val fileObservable = Flowable.create(
             { emitter: FlowableEmitter<Double> ->
-                var response = apiService.createLecture(
-                    /*
-                mapOf(
-                    "courseId" to createRequestBodyFromText(courseId.toString()),
-                    "name" to createRequestBodyFromText(name)
-                ),
-                 // courseId, name,
-                 */
+                val response = apiService.createLecture(
                     createRequestBodyFromText(courseId.toString()),
                     createRequestBodyFromText(name),
                     createMultipartBody(mFilePath, emitter)
                 ).blockingGet()
-                sendNotes(response.id)
                 emitter.onComplete()
+                sendNotes(response.id)
             }, BackpressureStrategy.LATEST
         )
         mDisposable = fileObservable.subscribeOn(Schedulers.computation())
