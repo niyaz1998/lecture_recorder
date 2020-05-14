@@ -96,6 +96,10 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             loadAndSetData()
         }
 
+        if (model.isCourseOwned.value != null && !model.isCourseOwned.value!!) {
+            view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add).visibility = View.INVISIBLE
+        }
+
         loadAndSetData()
     }
 

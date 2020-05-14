@@ -19,6 +19,9 @@ class ListViewModel: ViewModel() {
 
     val selectedTopicId = MutableLiveData<Int?>(null)
     val selectedTopicName = MutableLiveData<String>("")
+    val isTopicOwned = MutableLiveData<Boolean>(true)
+
     val selectedCourseId = MutableLiveData<Int?>(null)
     val selectedCourseName = MutableLiveData<String>("")
+    val isCourseOwned = MutableLiveData<Boolean>(true)
 }

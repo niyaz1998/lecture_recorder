@@ -85,6 +85,10 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
             loadAndSetData()
         }
 
+        if (model.isTopicOwned.value != null && !model.isTopicOwned.value!!) {
+            view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add).visibility = View.INVISIBLE
+        }
+
         loadAndSetData()
 
     }
@@ -209,6 +213,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
         val elem = model.courses.value?.get(position)?:return@onSelect
         model.selectedCourseId.postValue(elem.id)
         model.selectedCourseName.postValue(elem.title)
+        model.isCourseOwned.postValue(elem.isEditable)
         view?.findNavController()?.navigate(R.id.action_courseListFragment_to_lectureListFragment)
     }
 

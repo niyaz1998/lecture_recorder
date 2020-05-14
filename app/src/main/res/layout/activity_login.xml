@@ -72,7 +72,7 @@
         app:layout_constraintBottom_toTopOf="@+id/register_password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/sign_in_button"
+        app:layout_constraintTop_toBottomOf="@id/login_button"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <EditText

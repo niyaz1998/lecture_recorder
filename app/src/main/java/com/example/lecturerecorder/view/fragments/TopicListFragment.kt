@@ -200,6 +200,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     override fun onSelect(position: Int) {
         val elem = model.topics.value?.get(position)?:return@onSelect
         model.selectedTopicId.postValue(elem.id)
+        model.isTopicOwned.postValue(elem.isEditable)
         view?.findNavController()?.navigate(R.id.action_topicListFragment_to_courseListFragment)
     }
 

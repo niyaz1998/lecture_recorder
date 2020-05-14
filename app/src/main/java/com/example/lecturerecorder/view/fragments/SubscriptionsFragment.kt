@@ -75,7 +75,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
             SpacedDividerItemDecoration(context)
         )
 
-        setActionBarTitle("Subscriptions")
+        setActionBarTitle("Subscribed Courses")
 
         val fab = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add)
         fab.visibility = getVisibGone(true)
@@ -103,7 +103,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
 
     private fun handleResponse(response: SubResponse) {
 
-        val mappedList = response.courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "", it.id, true)}
+        val mappedList = response.courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "", it.id, it.isOwner)}
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -167,6 +167,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
         val elem = model.subscriptions.value?.get(position)?:return@onSelect
         model.selectedCourseId.postValue(elem.id)
         model.selectedCourseName.postValue(elem.title)
+        model.isCourseOwned.postValue(elem.isEditable)
         (activity as NavigationContract.Container).resetNavigation()
         view?.findNavController()?.navigate(R.id.action_subscriptionsFragment_to_lectureListFragment)
     }
