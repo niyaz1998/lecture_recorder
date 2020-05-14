@@ -58,6 +58,7 @@ class AudioUploadService : JobIntentService() {
                 ).blockingGet()
                 emitter.onComplete()
                 sendNotes(response.id)
+                // HERE SENDING NOTE IS FINISHED
             }, BackpressureStrategy.LATEST
         )
         mDisposable = fileObservable.subscribeOn(Schedulers.computation())

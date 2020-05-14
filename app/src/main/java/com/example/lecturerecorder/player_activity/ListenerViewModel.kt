@@ -1,6 +1,5 @@
 package com.example.lecturerecorder.player_activity
 
-import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
@@ -72,7 +71,9 @@ class ListenerViewModel(
     private fun initSeekBarListener() {
         mSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                mPlayer?.seekTo(progress * 1000)
+                if (fromUser) {
+                    mPlayer?.seekTo(progress * 1000)
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -86,8 +87,11 @@ class ListenerViewModel(
         mPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
             mPlayer!!.setDataSource(
-                listenerActivity,
-                Uri.parse("${BuildConfig.BASE_URL}api/v1/files/${lectureRecord.audioFile}"),
+                listenerActivity.applicationContext,
+                Uri.withAppendedPath(
+                    Uri.parse(BuildConfig.BASE_URL),
+                    "api/v1/files/${lectureRecord.audioFile}"
+                ),
                 mapOf<String, String>("Authorization" to "Bearer ${getAuthToken()}")
             )
             mPlayer!!.prepare()
