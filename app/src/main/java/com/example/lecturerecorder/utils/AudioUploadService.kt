@@ -7,6 +7,7 @@ import androidx.annotation.NonNull
 import androidx.core.app.JobIntentService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.lecturerecorder.model.ListService
+import com.example.lecturerecorder.model.NotePost
 import com.example.lecturerecorder.model.NoteResponse
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
@@ -50,22 +51,19 @@ class AudioUploadService : JobIntentService() {
         val apiService: ListService = RestClient.listService
         val fileObservable = Flowable.create(
             { emitter: FlowableEmitter<Double> ->
-                try {
-                    apiService.createLecture(
-                        /*
-                    mapOf(
-                        "courseId" to createRequestBodyFromText(courseId.toString()),
-                        "name" to createRequestBodyFromText(name)
-                    ),
-                     // courseId, name,
-                     */
-                        createRequestBodyFromText(courseId.toString()),
-                        createRequestBodyFromText(name),
-                        createMultipartBody(mFilePath, emitter)
-                    ).blockingGet()
-                } catch (e: Throwable) {
-                    Log.e(TAG, e.localizedMessage)
-                }
+                var response = apiService.createLecture(
+                    /*
+                mapOf(
+                    "courseId" to createRequestBodyFromText(courseId.toString()),
+                    "name" to createRequestBodyFromText(name)
+                ),
+                 // courseId, name,
+                 */
+                    createRequestBodyFromText(courseId.toString()),
+                    createRequestBodyFromText(name),
+                    createMultipartBody(mFilePath, emitter)
+                ).blockingGet()
+                sendNotes(response.id)
                 emitter.onComplete()
             }, BackpressureStrategy.LATEST
         )
@@ -98,6 +96,22 @@ class AudioUploadService : JobIntentService() {
     private fun onSuccess() {
         sendBroadcastMeaasge("File uploading successful ")
         Log.i(TAG, "onSuccess: File Uploaded")
+    }
+
+    private fun sendNotes(lectureId: Int) {
+        notes?.forEach {
+            var note: NoteResponse? = null
+            try {
+                 note = RestClient.listService.createNote(
+                    lectureId,
+                    NotePost(lectureId, text = it.text, timestamp = it.timestamp, picture = null)
+                ).blockingGet()
+                Log.d(TAG, "Note added ${note.text}")
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
+            // RestClient.listService.putNote(note.id, note = note)
+        }
     }
 
     fun sendBroadcastMeaasge(message: String?) {

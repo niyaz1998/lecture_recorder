@@ -72,9 +72,10 @@ interface ListService {
     //fun getNote()
 
     @POST("api/v1/lectures/{lectureId}/notes")
-    fun createNote(@Path("lectureId") lectureId: Int): Single<NoteResponse>
+    fun createNote(@Path("lectureId") lectureId: Int, @Body note: NotePost): Single<NoteResponse>
 
-    //fun putNote()
+    @POST("api/v1/notes/{noteId}")
+    fun putNote(@Path("noteId") noteId: Int, @Body note: NoteResponse) : Single<NoteResponse>
 
     @DELETE("api/v1/lectures/{lectureId}/notes")
     fun deleteNote(@Path("lectureId") lectureId: Int, @Path("noteId") noteId: Int): Completable

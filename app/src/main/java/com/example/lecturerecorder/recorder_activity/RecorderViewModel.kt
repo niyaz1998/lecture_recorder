@@ -107,7 +107,8 @@ class RecorderViewModel(
                 text = "",
                 timestamp = getSecondsFromStartTime().toInt(),
                 lectureId = 0,
-                picture = ""
+                picture = "",
+                id = -1
             )
         )
         view.showNotesList(notes)
