@@ -3,7 +3,6 @@ package com.example.lecturerecorder.player_activity
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Handler
-import android.util.Log
 import android.widget.SeekBar
 import com.example.lecturerecorder.model.LectureResponse
 
@@ -103,11 +102,13 @@ class ListenerViewModel(
         mHandler.postDelayed(mRunnable!!, 1000)
 
 
-        for (i in lectureRecord.note.indices) {
-            listenerActivity.addDroplet(
-                i + 1,
-                lectureRecord.note[i].timestamp.toFloat() / mSeekBar.max.toFloat()
-            )
+        lectureRecord.note?.let {
+            for (i in lectureRecord.note!!.indices) {
+                listenerActivity.addDroplet(
+                    i + 1,
+                    lectureRecord.note!![i].timestamp.toFloat() / mSeekBar.max.toFloat()
+                )
+            }
         }
     }
 

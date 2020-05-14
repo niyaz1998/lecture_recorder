@@ -1,8 +1,6 @@
 package com.example.lecturerecorder.view.fragments
 
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,25 +9,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.contract.NavigationContract
-import com.example.lecturerecorder.model.CourseResponse
 import com.example.lecturerecorder.model.LectureResponse
-import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.model.ListElement
 import com.example.lecturerecorder.model.ListElementType
 import com.example.lecturerecorder.utils.RestClient
 import com.example.lecturerecorder.utils.SpacedDividerItemDecoration
 import com.example.lecturerecorder.utils.parseHttpErrorMessage
-import com.example.lecturerecorder.view.MainActivity
+import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.viewmodel.ListViewModel
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.textfield.TextInputLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -63,7 +57,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
         compositeDisposable = CompositeDisposable()
 
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = ListAdapter(model.lectures.value?: emptyList(), this)
+        viewAdapter = ListAdapter(model.lectures.value ?: emptyList(), this)
 
         recyclerView = view.findViewById<RecyclerView>(list_container.id).apply {
             setHasFixedSize(true)
@@ -87,26 +81,32 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
 
     fun loadAndSetData() {
         compositeDisposable.add(
-            RestClient.listService.getLectures(model.selectedCourseId.value?:return@loadAndSetData)
+            RestClient.listService.getLectures(
+                model.selectedCourseId.value ?: return@loadAndSetData
+            )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse, this::handleError))
+                .subscribe(this::handleResponse, this::handleError)
+        )
     }
 
     private fun handleResponse(lectures: List<LectureResponse>?) {
-        val mappedList = lectures?.map{ ListElement(ListElementType.Short, it.name, null, null, it.courseId)}
+        val mappedList =
+            lectures?.map { ListElement(ListElementType.Short, it.name, null, null, it.id) }
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
             viewAdapter = ListAdapter(emptyList(), this)
             recyclerView.adapter = viewAdapter
             model.lectures.postValue(emptyList())
+            model.lectureModels.postValue(emptyList())
             showEmptyListIndicator(true)
             setEmptyListText("No lectures available here")
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
             model.lectures.postValue(mappedList)
+            model.lectureModels.postValue(lectures)
             showEmptyListIndicator(false)
         }
     }
@@ -123,7 +123,8 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
             RestClient.listService.deleteLecture(lectureId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::lectureDeleted, this::lectureDeleteError))
+                .subscribe(this::lectureDeleted, this::lectureDeleteError)
+        )
     }
 
     private fun lectureDeleted() {
@@ -153,23 +154,42 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
     }
 
     override fun onSelect(position: Int) {
-        val elem = model.lectures.value?.get(position)?:return@onSelect
-        (activity as NavigationContract.Container).goToPreviewView(elem.id)
+        try {
+            val elem = model.lectures.value?.get(position) ?: return@onSelect
+            model.lectureModels.value.let {
+                var lecture: LectureResponse? = null
+                for (l in model.lectureModels.value!!) {
+                    if (l.id == elem.id) {
+                        lecture = l
+                    }
+                }
+                lecture?.let {
+                    (activity as NavigationContract.Container).goToPreviewView(elem.id, lecture)
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
         //Toast.makeText(requireContext(), "Open Preview Activity Here", Toast.LENGTH_LONG).show()
     }
 
     override fun onLongSelect(position: Int) {
-        val elem = model.lectures.value?.get(position)?:return@onLongSelect
+        val elem = model.lectures.value?.get(position) ?: return@onLongSelect
         createDeleteConfirmation(elem.id, elem.title)
     }
 
 
     fun getVisibGone(s: Boolean): Int {
-        return if (s) {View.GONE} else {View.VISIBLE}
+        return if (s) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
     }
 
     private fun showEmptyListIndicator(state: Boolean) {
-        requireView().findViewById<RelativeLayout>(R.id.empty_list_info).visibility = getVisibGone(!state)
+        requireView().findViewById<RelativeLayout>(R.id.empty_list_info).visibility =
+            getVisibGone(!state)
     }
 
     private fun setEmptyListText(text: String) {
@@ -208,10 +228,10 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Are you sure?")
         builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") {_, _->
+        builder.setPositiveButton("Delete") { _, _ ->
             deleteLectureRequest(lectureId)
         }
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton("Cancel") { _, _ -> } // do nothing
         builder.show()
     }
 }

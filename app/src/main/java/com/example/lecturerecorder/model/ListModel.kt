@@ -83,8 +83,10 @@ data class LectureResponse(
     val audioFile: String,
     @SerializedName("course_id")
     val courseId:  Int,
+    @SerializedName("id")
+    val id:  Int,
     @SerializedName("notes")
-    val note: List<NoteResponse>
+    val note: List<NoteResponse>?
 ) : Parcelable
 
 @Parcelize

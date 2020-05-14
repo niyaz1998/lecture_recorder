@@ -27,7 +27,8 @@ var stubLecture = LectureResponse(
         NoteResponse(timestamp = 60, text = "note 6", lectureId = 0, picture = "")
     ),
     audioFile = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3",
-    courseId = 0
+    courseId = -1,
+    id = -1
 )
 
 class ListenerActivity : AppCompatActivity() {
@@ -57,7 +58,7 @@ class ListenerActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@ListenerActivity)
             adapter =
                 ReadNotesAdapter(
-                    lectureRecord.note
+                    if (lectureRecord.note != null) lectureRecord.note!! else emptyList()
                 )
         }
 
