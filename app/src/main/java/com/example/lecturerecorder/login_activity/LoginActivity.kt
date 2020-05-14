@@ -95,7 +95,7 @@ class LoginActivity : AppCompatActivity() {
     private fun updateUI(account: GoogleSignInAccount?) {
         if (account == null) {
             tv_checking_sign_in.visibility = View.GONE
-            sign_in_button.visibility = View.VISIBLE
+            sign_in_button.visibility = View.GONE
         } else {
             startActivity(Intent(this, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP

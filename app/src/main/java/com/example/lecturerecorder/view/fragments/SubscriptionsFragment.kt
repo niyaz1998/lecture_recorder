@@ -16,6 +16,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.contract.NavigationContract
@@ -84,6 +85,11 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
 
         (activity as NavigationContract.Container).setHeaderVisibility(false)
 
+        val srl = view.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
+        srl.setOnRefreshListener {
+            loadAndSetData()
+        }
+
         loadAndSetData()
     }
 
@@ -112,11 +118,13 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
             model.subscriptions.postValue(mappedList)
             showEmptyListIndicator(false)
         }
+        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
     private fun handleError(error: Throwable) {
         val message = parseHttpErrorMessage(error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
     // DELETE TOPIC ###########################################################################
@@ -158,7 +166,9 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
     override fun onSelect(position: Int) {
         val elem = model.subscriptions.value?.get(position)?:return@onSelect
         model.selectedCourseId.postValue(elem.id)
+        model.selectedCourseName.postValue(elem.title)
         view?.findNavController()?.navigate(R.id.action_subscriptionsFragment_to_lectureListFragment)
+        (activity as NavigationContract.Container).resetNavigation()
     }
 
     override fun onLongSelect(position: Int) {

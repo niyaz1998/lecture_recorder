@@ -13,6 +13,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.contract.NavigationContract
 import com.example.lecturerecorder.model.ListElement
@@ -80,6 +81,11 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
 
         (activity as NavigationContract.Container).setHeaderVisibility(false)
 
+        val srl = view.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
+        srl.setOnRefreshListener {
+            loadAndSetData()
+        }
+
         loadAndSetData()
     }
 
@@ -109,11 +115,13 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
             model.topics.postValue(mappedList)
             showEmptyListIndicator(false)
         }
+        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
     private fun handleError(error: Throwable) {
         val message = parseHttpErrorMessage(error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
     // CREATE TOPIC ###########################################################################

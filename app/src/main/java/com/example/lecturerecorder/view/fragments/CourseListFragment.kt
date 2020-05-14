@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.contract.NavigationContract
@@ -78,6 +79,11 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
             createAdditionDialog()
         }
 
+        val srl = view.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
+        srl.setOnRefreshListener {
+            loadAndSetData()
+        }
+
         loadAndSetData()
 
     }
@@ -109,12 +115,14 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
             model.courses.postValue(mappedList)
             showEmptyListIndicator(false)
         }
+        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
     private fun handleError(error: Throwable) {
         //load data from repo
         val message = parseHttpErrorMessage(error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
     // CREATE COURSE ###########################################################################

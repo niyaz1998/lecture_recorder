@@ -38,6 +38,7 @@ class RecorderViewModel(
             state = RecorderState.RECORDED
             view.setButton(ButtonState.NULL)
             view.enableAddNodeButton(false)
+            view.enableSubmitButton()
         }
     }
 
@@ -48,13 +49,16 @@ class RecorderViewModel(
         recorder = null
     }
 
-    fun onSavePressed() {
-        printData()
+    fun onSavePressed(lectureName: String) {
+        if (view.checkLectureName()) {
+            view.sendFile(lectureName, notes)
+            view.stop()
+        }
     }
 
     private fun startRecording() {
         recorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            setAudioSource(MediaRecorder.AudioSource.DEFAULT)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setOutputFile(fileName)
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
@@ -103,7 +107,8 @@ class RecorderViewModel(
                 text = "",
                 timestamp = getSecondsFromStartTime().toInt(),
                 lectureId = 0,
-                picture = ""
+                picture = "",
+                id = -1
             )
         )
         view.showNotesList(notes)

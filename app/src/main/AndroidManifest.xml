@@ -35,7 +35,9 @@
         </activity>
 
         <activity android:name=".recorder_activity.RecorderActivity"/>
-
+        <service
+            android:name=".utils.AudioUploadService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
         <!--
     <intent-filter>
         <action android:name="android.intent.action.MAIN" />
