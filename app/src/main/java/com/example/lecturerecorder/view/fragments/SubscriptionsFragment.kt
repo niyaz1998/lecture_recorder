@@ -167,8 +167,8 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
         val elem = model.subscriptions.value?.get(position)?:return@onSelect
         model.selectedCourseId.postValue(elem.id)
         model.selectedCourseName.postValue(elem.title)
-        view?.findNavController()?.navigate(R.id.action_subscriptionsFragment_to_lectureListFragment)
         (activity as NavigationContract.Container).resetNavigation()
+        view?.findNavController()?.navigate(R.id.action_subscriptionsFragment_to_lectureListFragment)
     }
 
     override fun onLongSelect(position: Int) {

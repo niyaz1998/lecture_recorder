@@ -11,6 +11,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -290,16 +291,20 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     override fun subscribeClicked() {
         TODO("Not yet implemented")
     }
+    
 
     override fun navigateToAll() {
         model.isPersonalFilterEnabled.postValue(false)
+        loadAndSetData()
     }
 
     override fun navigateToPersonal() {
         model.isPersonalFilterEnabled.postValue(true)
+        loadAndSetData()
     }
 
     override fun navigateToSubscriptions() {
         model.isPersonalFilterEnabled.postValue(false)
+        findNavController().navigate(R.id.action_courseListFragment_to_subscriptionsFragment)
     }
 }

@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), NavigationContract.Container {
 
-    private var skipAction = false
+    public var skipAction = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +36,12 @@ class MainActivity : AppCompatActivity(), NavigationContract.Container {
             when (it.itemId) {
                 R.id.bottom_nav_search -> {
                     if (!skipAction) {
-                        skipAction = false
                         val navHostFragment =
                             supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
                         val fragment = navHostFragment!!.childFragmentManager.fragments[0]
                         (fragment as NavigationContract.Fragment).navigateToAll()
                     }
+                    skipAction = false
                     true
                 }
 
