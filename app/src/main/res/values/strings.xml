@@ -20,4 +20,7 @@
     <string name="register">Register</string>
     <string name="name">Name</string>
     <string name="description">Description</string>
+    <string name="enter_lecture_name">Enter Lecture Name</string>
+    <string name="enter_login">Enter Login</string>
+    <string name="enter_password">Enter Password</string>
 </resources>

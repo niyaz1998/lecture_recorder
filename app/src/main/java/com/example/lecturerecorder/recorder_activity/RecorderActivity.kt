@@ -1,16 +1,20 @@
 package com.example.lecturerecorder.recorder_activity
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.NoteResponse
+import com.example.lecturerecorder.utils.AudioUploadService
 import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_recorder.*
+import java.util.*
 
 
 private const val LOG_TAG = "RecorderActivity"
@@ -19,13 +23,17 @@ private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
 class RecorderActivity : AppCompatActivity() {
 
     private var viewModel: RecorderViewModel? = null
-
+    private var courseId: Int? = null
+    private lateinit var fileName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_recorder)
 
-        val fileName = "${externalCacheDir?.absolutePath}/audiorecordtest.3gp"
+        courseId = intent.extras?.getInt("courseId")
+
+        val name = "audio_${courseId}_${Calendar.getInstance().timeInMillis}"
+        fileName = "${externalCacheDir?.absolutePath}/$name.3gp"
 
         viewModel = RecorderViewModel(fileName, this, mutableListOf())
 
@@ -50,7 +58,7 @@ class RecorderActivity : AppCompatActivity() {
             adapter = viewAdapter
         }
 
-        bSave.setOnClickListener { viewModel?.onSavePressed() }
+        bSave.setOnClickListener { viewModel?.onSavePressed(etLectureName.text.toString()) }
 
         ActivityCompat.requestPermissions(
             this,
@@ -94,6 +102,7 @@ class RecorderActivity : AppCompatActivity() {
             ButtonState.RECORD -> bMain.setImageResource(R.drawable.ic_radio)
             ButtonState.STOP_RECORD -> bMain.setImageResource(R.drawable.ic_mute)
             ButtonState.NULL -> bMain.visibility = View.INVISIBLE
+            // ButtonState.UPLOAD_FILE -> bMain.setImageResource(R.drawable.ic_file_upload)
         }
     }
 
@@ -107,6 +116,38 @@ class RecorderActivity : AppCompatActivity() {
 
     fun enableAddNodeButton(enabled: Boolean) {
         bAddNote.isEnabled = enabled
+    }
+
+    fun sendFile(
+        lectureName: String,
+        notes: MutableList<NoteResponse>
+    ) {
+        val mIntent = Intent(this, AudioUploadService::class.java)
+        mIntent.putExtra("mFilePath", fileName)
+        mIntent.putExtra("courseId", courseId)
+        mIntent.putExtra("name", lectureName)
+        mIntent.putParcelableArrayListExtra("notes", ArrayList(notes))
+        AudioUploadService.enqueueWork(this, mIntent)
+    }
+
+    fun enableSubmitButton() {
+        bSave.isEnabled = true
+    }
+
+    fun checkLectureName(): Boolean {
+        val result = etLectureName.text.isNotEmpty()
+        if (!result) {
+            val toast = Toast.makeText(
+                applicationContext,
+                resources.getString(R.string.enter_lecture_name), Toast.LENGTH_SHORT
+            )
+            toast.show()
+        }
+        return result;
+    }
+
+    fun stop() {
+        onBackPressed()
     }
 }
 

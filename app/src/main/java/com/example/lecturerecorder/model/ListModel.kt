@@ -83,12 +83,27 @@ data class LectureResponse(
     val audioFile: String,
     @SerializedName("course_id")
     val courseId:  Int,
+    @SerializedName("id")
+    val id:  Int,
     @SerializedName("notes")
-    val note: List<NoteResponse>
+    val note: List<NoteResponse>?
 ) : Parcelable
 
 @Parcelize
-data class NoteResponse( // FIXME: already implemented in Note.kt
+data class NoteResponse(
+    @SerializedName("lecture_id")
+    val lectureId: Int,
+    @SerializedName("text")
+    var text: String,
+    @SerializedName("timestamp")
+    val timestamp: Int, // in seconds
+    @SerializedName("id")
+    val id:  Int,
+    @SerializedName("picture")
+    val picture: String
+) : Parcelable
+
+data class NotePost(
     @SerializedName("lecture_id")
     val lectureId: Int,
     @SerializedName("text")
@@ -96,5 +111,5 @@ data class NoteResponse( // FIXME: already implemented in Note.kt
     @SerializedName("timestamp")
     val timestamp: Int, // in seconds
     @SerializedName("picture")
-    val picture: String
-) : Parcelable
+    val picture: String?
+)

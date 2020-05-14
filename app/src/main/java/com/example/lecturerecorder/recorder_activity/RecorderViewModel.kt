@@ -38,6 +38,7 @@ class RecorderViewModel(
             state = RecorderState.RECORDED
             view.setButton(ButtonState.NULL)
             view.enableAddNodeButton(false)
+            view.enableSubmitButton()
         }
     }
 
@@ -48,8 +49,11 @@ class RecorderViewModel(
         recorder = null
     }
 
-    fun onSavePressed() {
-        printData()
+    fun onSavePressed(lectureName: String) {
+        if (view.checkLectureName()) {
+            view.sendFile(lectureName, notes)
+            view.stop()
+        }
     }
 
     private fun startRecording() {
@@ -103,7 +107,8 @@ class RecorderViewModel(
                 text = "",
                 timestamp = getSecondsFromStartTime().toInt(),
                 lectureId = 0,
-                picture = ""
+                picture = "",
+                id = -1
             )
         )
         view.showNotesList(notes)

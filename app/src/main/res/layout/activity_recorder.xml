@@ -40,6 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/start_recording"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/bMain"
             app:layout_constraintStart_toStartOf="@+id/bMain"
@@ -67,12 +68,26 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
     <Button
+        android:enabled="false"
         android:id="@+id/bSave"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:text="@string/save_record"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/etLectureName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="@string/enter_lecture_name"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="@+id/bSave"
+        app:layout_constraintEnd_toStartOf="@+id/bSave"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bSave" />
 </androidx.constraintlayout.widget.ConstraintLayout>
