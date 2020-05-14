@@ -1,5 +1,9 @@
 package com.example.lecturerecorder.view.fragments
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,6 +43,8 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
 
     private val model: ListViewModel by activityViewModels()
 
+    private lateinit var broadcastReceiver: BroadcastReceiver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -51,8 +57,21 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener {
         return inflater.inflate(R.layout.fragment_recycler_list, container, false)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        activity?.unregisterReceiver(broadcastReceiver)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        broadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                loadAndSetData()
+            }
+        }
+        activity?.registerReceiver(broadcastReceiver, IntentFilter("com.example.lecturerecorder.AudioUploadService"))
 
         compositeDisposable = CompositeDisposable()
 

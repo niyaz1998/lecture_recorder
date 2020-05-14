@@ -16,12 +16,12 @@
         <item name="android:windowBackground">@drawable/launch_screen</item>
     </style>
 
-    <style name="textPrimary" parent="@style/Text">
+    <style name="textPrimary" parent="@style/AppTheme">
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/textBlack</item>
     </style>
 
-    <style name="textPrimarySmall" parent="@style/Text">
+    <style name="textPrimarySmall" parent="@style/textPrimary">
         <item name="android:textSize">15sp</item>
     </style>
 
