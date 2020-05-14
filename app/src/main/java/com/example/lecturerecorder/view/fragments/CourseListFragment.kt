@@ -266,7 +266,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
 
         val nameField = innerView.findViewById<TextInputLayout>(R.id.name_field)
         val descrField = innerView.findViewById<TextInputLayout>(R.id.description_field)
-        nameField.editText?.setText(name)
+        nameField.editText?.setText(name.dropLast(5))
         descrField.editText?.setText(description)
 
         builder.setView(innerView)
