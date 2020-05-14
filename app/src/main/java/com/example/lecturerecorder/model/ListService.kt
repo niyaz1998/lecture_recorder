@@ -61,8 +61,8 @@ interface ListService {
 //    @POST("api/v1/lectures/{lectureId}")
 //    fun putLecture(@Query("lecture_id") lectureId: Int, @Multipart("") course: LecturePost)
 
-    @POST("api/v1/lectures/{lectureid}")
-    fun deleteLecture(@Query("lecture_id") lectureId: Int): Completable
+    @DELETE("api/v1/lectures/{lecture_id}")
+    fun deleteLecture(@Path("lecture_id") lectureId: Int): Completable
 
     // NOTES #########################################################################
 
