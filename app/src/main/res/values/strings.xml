@@ -23,4 +23,5 @@
     <string name="enter_lecture_name">Enter Lecture Name</string>
     <string name="enter_login">Enter Login</string>
     <string name="enter_password">Enter Password</string>
+    <string name="add">Add</string>
 </resources>

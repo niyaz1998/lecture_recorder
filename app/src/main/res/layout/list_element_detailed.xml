@@ -20,15 +20,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:textSize="@dimen/font_size_medium"
-            tools:text="Title"
-            android:textStyle="bold"/>
+            style="@style/textPrimaryBold"
+            tools:text="Title"/>
 
         <TextView
             android:id="@+id/list_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/font_size_small"
+            style="@style/textPrimarySmall"
             android:layout_gravity="start"
             tools:text="description"/>
     </LinearLayout>
@@ -47,7 +46,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
-            android:textSize="@dimen/font_size_small"
+            style="@style/textPrimary"
             tools:text="info" />
     </LinearLayout>
 
