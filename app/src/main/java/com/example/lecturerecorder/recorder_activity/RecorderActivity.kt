@@ -118,11 +118,15 @@ class RecorderActivity : AppCompatActivity() {
         bAddNote.isEnabled = enabled
     }
 
-    fun sendFile(lectureName: String) {
+    fun sendFile(
+        lectureName: String,
+        notes: MutableList<NoteResponse>
+    ) {
         val mIntent = Intent(this, AudioUploadService::class.java)
         mIntent.putExtra("mFilePath", fileName)
         mIntent.putExtra("courseId", courseId)
         mIntent.putExtra("name", lectureName)
+        mIntent.putParcelableArrayListExtra("notes", ArrayList(notes))
         AudioUploadService.enqueueWork(this, mIntent)
     }
 

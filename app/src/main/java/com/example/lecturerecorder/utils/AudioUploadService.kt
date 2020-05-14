@@ -7,6 +7,7 @@ import androidx.annotation.NonNull
 import androidx.core.app.JobIntentService
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.lecturerecorder.model.ListService
+import com.example.lecturerecorder.model.NoteResponse
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.FlowableEmitter
@@ -23,6 +24,7 @@ class AudioUploadService : JobIntentService() {
     var mDisposable: Disposable? = null
 
     var name: String? = null
+    var notes: List<NoteResponse>? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -37,6 +39,7 @@ class AudioUploadService : JobIntentService() {
         val mFilePath = intent.getStringExtra("mFilePath")
         val courseId = intent.getIntExtra("courseId", -1)
         val name = intent.getStringExtra("name")
+        notes = intent.getParcelableArrayListExtra<NoteResponse>("notes")
         if (mFilePath == null || courseId == -1 || name == null) {
             Log.e(
                 TAG,
@@ -120,7 +123,7 @@ class AudioUploadService : JobIntentService() {
     ): MultipartBody.Part {
         val file = File(filePath)
         return MultipartBody.Part.createFormData(
-            "myFile", file.name,
+            "file", file.name,
             createCountingRequestBody(file, "audio", emitter)
         )
     }

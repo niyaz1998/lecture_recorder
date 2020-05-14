@@ -51,7 +51,7 @@ class RecorderViewModel(
 
     fun onSavePressed(lectureName: String) {
         if (view.checkLectureName()) {
-            view.sendFile(lectureName)
+            view.sendFile(lectureName, notes)
             view.stop()
         }
     }

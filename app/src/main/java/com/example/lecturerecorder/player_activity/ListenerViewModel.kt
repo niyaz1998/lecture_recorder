@@ -1,10 +1,14 @@
 package com.example.lecturerecorder.player_activity
 
+import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Handler
 import android.widget.SeekBar
+import com.example.lecturerecorder.BuildConfig
 import com.example.lecturerecorder.model.LectureResponse
+import com.example.lecturerecorder.utils.getAuthToken
 
 class ListenerViewModel(
     var lectureRecord: LectureResponse,
@@ -81,7 +85,11 @@ class ListenerViewModel(
         mPlayer = MediaPlayer()
         mPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
-            mPlayer!!.setDataSource(lectureRecord.audioFile)
+            mPlayer!!.setDataSource(
+                listenerActivity,
+                Uri.parse("${BuildConfig.BASE_URL}api/v1/files/${lectureRecord.audioFile}"),
+                mapOf<String, String>("Authorization" to "Bearer ${getAuthToken()}")
+            )
             mPlayer!!.prepare()
         } catch (e: Throwable) {
             e.printStackTrace()
