@@ -21,7 +21,7 @@
         <item name="android:textColor">@color/textBlack</item>
     </style>
 
-    <style name="textPrimarySmall" parent="@style/AppTheme">
+    <style name="textPrimarySmall" parent="@style/textPrimary">
         <item name="android:textSize">15sp</item>
     </style>
 
