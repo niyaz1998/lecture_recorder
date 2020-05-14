@@ -33,7 +33,8 @@ var stubLecture = LectureResponse(
     ),
     audioFile = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3",
     courseId = -1,
-    id = -1
+    id = -1,
+    isOwner = false
 )
 
 class ListenerActivity : AppCompatActivity() {

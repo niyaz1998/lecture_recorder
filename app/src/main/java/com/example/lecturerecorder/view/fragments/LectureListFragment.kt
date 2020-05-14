@@ -131,7 +131,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
     private fun handleResponse(lectures: List<LectureResponse>?) {
         val mappedList =
-            lectures?.map { ListElement(ListElementType.Short, it.name, null, null, it.id) }
+            lectures?.map { ListElement(ListElementType.Short, if(it.isOwner){"${it.name} (my)"}else{it.name}, null, null, it.id, it.isOwner) }
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -236,7 +236,11 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
     override fun onLongSelect(position: Int) {
         val elem = model.lectures.value?.get(position) ?: return@onLongSelect
-        createDeleteConfirmation(elem.id, elem.title)
+        if (elem.isEditable){
+            createDeleteConfirmation(elem.id, elem.title)
+        } else {
+            Toast.makeText(requireContext(), "This is not your lecture", Toast.LENGTH_LONG).show()
+        }
     }
 
 

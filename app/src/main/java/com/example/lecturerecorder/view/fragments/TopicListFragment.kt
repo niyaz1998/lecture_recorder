@@ -99,8 +99,8 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     }
 
     private fun handleResponse(topics: List<TopicResponse>?) {
-        val mappedList = topics?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "${it.courses} ${getString(
-            R.string.courses_lowercase)}", it.id)}
+        val mappedList = topics?.map{ ListElement(ListElementType.Detailed, if(it.isOwner){"${it.name} (my)"}else{it.name}, it.description, "${it.courses} ${getString(
+            R.string.courses_lowercase)}", it.id, it.isOwner)}
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -205,7 +205,11 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
 
     override fun onLongSelect(position: Int) {
         val elem = model.topics.value?.get(position)?:return@onLongSelect
-        createEditDialog(elem.id, elem.title, elem.description?:"")
+        if (elem.isEditable){
+            createEditDialog(elem.id, elem.title, elem.description?:"")
+        } else {
+            Toast.makeText(requireContext(), "This is not your topic", Toast.LENGTH_LONG).show()
+        }
     }
 
     fun getVisibGone(s: Boolean): Int {

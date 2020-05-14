@@ -100,8 +100,8 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     }
 
     private fun handleResponse(courses: List<CourseResponse>?) {
-        val mappedList = courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "${it.audios} ${getString(
-            R.string.lectures_underscore)}", it.id)}
+        val mappedList = courses?.map{ ListElement(ListElementType.Detailed, if(it.isOwner){"${it.name} (my)"}else{it.name}, it.description, "${it.audios} ${getString(
+            R.string.lectures_underscore)}", it.id, it.isOwner)}
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -214,7 +214,11 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
 
     override fun onLongSelect(position: Int) {
         val elem = model.courses.value?.get(position)?:return@onLongSelect
-        createEditDialog(model.selectedTopicId.value?:0, elem.id, elem.title, elem.description?:"")
+        if (elem.isEditable) {
+            createEditDialog(model.selectedTopicId.value?:0, elem.id, elem.title, elem.description?:"")
+        } else {
+            Toast.makeText(requireContext(), "This is not your course", Toast.LENGTH_LONG).show()
+        }
     }
 
 
@@ -289,9 +293,8 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     }
 
     override fun subscribeClicked() {
-        TODO("Not yet implemented")
     }
-    
+
 
     override fun navigateToAll() {
         model.isPersonalFilterEnabled.postValue(false)

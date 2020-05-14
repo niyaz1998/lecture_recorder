@@ -16,7 +16,8 @@ data class ListElement(
     val title: String,
     val description: String?,
     val info: String?,
-    val id: Int
+    val id: Int,
+    val isEditable: Boolean
 )
 
 // TOPICS #############################################
@@ -36,7 +37,10 @@ data class TopicResponse(
     @SerializedName("description")
     val description: String,
     @SerializedName("courses")
-    val courses: Int
+    val courses: Int,
+    @SerializedName("is_owner")
+    val isOwner: Boolean
+
 )
 
 // COURSES #############################################
@@ -58,7 +62,9 @@ data class CourseResponse(
     @SerializedName("audios")
     val audios: Int,
     @SerializedName("topic")
-    val topic: Int
+    val topic: Int,
+    @SerializedName("is_owner")
+    val isOwner: Boolean
 )
 
 // LECTURES #############################################
@@ -86,7 +92,9 @@ data class LectureResponse(
     @SerializedName("id")
     val id:  Int,
     @SerializedName("notes")
-    val note: List<NoteResponse>?
+    val note: List<NoteResponse>?,
+    @SerializedName("is_owner")
+    val isOwner: Boolean
 ) : Parcelable
 
 @Parcelize

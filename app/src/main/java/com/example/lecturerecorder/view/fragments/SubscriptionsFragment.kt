@@ -103,7 +103,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
 
     private fun handleResponse(response: SubResponse) {
 
-        val mappedList = response.courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "", it.id)}
+        val mappedList = response.courses?.map{ ListElement(ListElementType.Detailed, it.name, it.description, "", it.id, true)}
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -127,23 +127,23 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
         requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
     }
 
-    // DELETE TOPIC ###########################################################################
+    // UNSUB COURSE ###########################################################################
 
-    private fun deleteLectureRequest(lectureId: Int) {
+    private fun unsubCourseRequest(courseId: Int) {
         compositeDisposable.add(
-            RestClient.listService.deleteLecture(lectureId)
+            RestClient.listService.unsubCourse(courseId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::lectureDeleted, this::lectureDeleteError))
+                .subscribe(this::courseUnsub, this::courseUnsubError))
     }
 
-    private fun lectureDeleted() {
+    private fun courseUnsub() {
         Toast.makeText(requireContext(), "Lecture Deleted", Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
 
-    private fun lectureDeleteError(error: Throwable) {
+    private fun courseUnsubError(error: Throwable) {
         Toast.makeText(requireContext(), "Lecture Delete Error", Toast.LENGTH_SHORT).show()
     }
 
@@ -172,7 +172,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
     }
 
     override fun onLongSelect(position: Int) {
-        val elem = model.lectures.value?.get(position)?:return@onLongSelect
+        val elem = model.subscriptions.value?.get(position)?:return@onLongSelect
         createDeleteConfirmation(elem.id, elem.title)
     }
 
@@ -188,12 +188,12 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
         requireView().findViewById<TextView>(R.id.empty_list_text).text = text
     }
 
-    private fun createDeleteConfirmation(lectureId: Int, name: String) {
+    private fun createDeleteConfirmation(courseId: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("Are you sure?")
-        builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") {_, _->
-            deleteLectureRequest(lectureId)
+        builder.setMessage("Unsubscribe $name")
+        builder.setPositiveButton("Unsubscribe") {_, _->
+            unsubCourseRequest(courseId)
         }
         builder.setNeutralButton("Cancel") {_, _->} // do nothing
         builder.show()
