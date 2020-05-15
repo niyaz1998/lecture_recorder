@@ -20,7 +20,12 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 
-
+/*
+сервис запускается для загрузки лекции на сервак
+сначла сервис загружает лекцию (создание лекции происходит сразу вместе с загрузкой файла)
+после он догружает заметки для лекции по одной
+когда закончит он отсылает интент в LocalBroadcast (чтобы обновить список лекций)
+ */
 class AudioUploadService : JobIntentService() {
     var mDisposable: Disposable? = null
 

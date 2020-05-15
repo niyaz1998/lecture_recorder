@@ -48,15 +48,10 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
     private lateinit var broadcastReceiver: BroadcastReceiver
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recycler_list, container, false)
     }
 
@@ -97,7 +92,8 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         }
 
         if (model.isCourseOwned.value != null && !model.isCourseOwned.value!!) {
-            view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add).visibility = View.INVISIBLE
+            view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add).visibility =
+                View.INVISIBLE
         }
 
         loadAndSetData()
@@ -135,7 +131,15 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
     private fun handleResponse(lectures: List<LectureResponse>?) {
         val mappedList =
-            lectures?.map { ListElement(ListElementType.Short, if(it.isOwner){"${it.name} (my)"}else{it.name}, null, null, it.id, it.isOwner) }
+            lectures?.map {
+                ListElement(
+                    ListElementType.Short, if (it.isOwner) {
+                        "${it.name} (my)"
+                    } else {
+                        it.name
+                    }, null, null, it.id, it.isOwner
+                )
+            }
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -173,13 +177,18 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     private fun lectureDeleted() {
-        Toast.makeText(requireContext(), getString(R.string.lecture_deleted), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.lecture_deleted), Toast.LENGTH_SHORT)
+            .show()
         loadAndSetData()
     }
 
 
     private fun lectureDeleteError(error: Throwable) {
-        Toast.makeText(requireContext(), getString(R.string.lecture_delete_error), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.lecture_delete_error),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     // SUBSCRIBE TO COURSE ###########################################################################
@@ -194,12 +203,17 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     private fun courseSubscribed() {
-        Toast.makeText(requireContext(), getString(R.string.courses_subscribed), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.courses_subscribed), Toast.LENGTH_SHORT)
+            .show()
     }
 
 
     private fun courseSubscribeError(error: Throwable) {
-        Toast.makeText(requireContext(), getString(R.string.courses_subscribe_error), Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.courses_subscribe_error),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     // UTILS ###########################################################################
@@ -235,15 +249,18 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         } catch (e: Throwable) {
             e.printStackTrace()
         }
-        //Toast.makeText(requireContext(), "Open Preview Activity Here", Toast.LENGTH_LONG).show()
     }
 
     override fun onLongSelect(position: Int) {
         val elem = model.lectures.value?.get(position) ?: return@onLongSelect
-        if (elem.isEditable){
+        if (elem.isEditable) {
             createDeleteConfirmation(elem.id, elem.title)
         } else {
-            Toast.makeText(requireContext(), getString(R.string.this_is_not_your_course), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.this_is_not_your_course),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 

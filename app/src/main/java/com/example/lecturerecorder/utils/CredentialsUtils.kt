@@ -1,16 +1,10 @@
 package com.example.lecturerecorder.utils
 
-import android.app.Activity
 import android.content.Context
-import android.provider.Settings.Global.getString
-import android.view.View
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.ErrorResponse
 import com.google.gson.Gson
-import okhttp3.Interceptor
-import okhttp3.Response
 import retrofit2.HttpException
-import java.lang.Exception
 
 fun storeAuthToken(token: String) {
     val context = LectureRecorder.appContext
