@@ -105,7 +105,11 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         requireView().requestFocus()
         requireView().setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.use_home_button_to_exit),
+                    Snackbar.LENGTH_SHORT
+                )
                     .show()
                 true
             } else {
@@ -245,8 +249,10 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     // UTILS ###########################################################################
 
     override fun onDestroy() {
+        if (this::compositeDisposable.isInitialized) {
+            compositeDisposable.clear()
+        }
         super.onDestroy()
-        compositeDisposable.clear()
     }
 
     private fun setActionBarTitle(text: String) {

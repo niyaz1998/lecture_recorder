@@ -94,7 +94,11 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
         requireView().requestFocus()
         requireView().setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.use_home_button_to_exit),
+                    Snackbar.LENGTH_SHORT
+                )
                     .show()
                 true
             } else {
@@ -193,7 +197,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
         )
     }
 
-    private fun topicPut(reponse: TopicResponse) {
+    private fun topicPut(response: TopicResponse) {
         Snackbar.make(requireView(), getString(R.string.topic_updated), Snackbar.LENGTH_SHORT)
             .show()
         loadAndSetData()
@@ -234,8 +238,9 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     // UTILS ###########################################################################
 
     override fun onDestroy() {
-        compositeDisposable.dispose()
-        compositeDisposable.clear()
+        if (this::compositeDisposable.isInitialized) {
+            compositeDisposable.clear()
+        }
         super.onDestroy()
     }
 

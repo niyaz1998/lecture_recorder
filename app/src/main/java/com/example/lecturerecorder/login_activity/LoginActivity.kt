@@ -124,7 +124,11 @@ class LoginActivity : AppCompatActivity() {
         register_login?.text?.clear()
         register_password?.text?.clear()
 
-        Snackbar.make(findViewById(R.id.register_button), getString(R.string.registered_successfully), Snackbar.LENGTH_LONG).show()
+        Snackbar.make(
+            findViewById(R.id.register_button),
+            getString(R.string.registered_successfully),
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     private fun registerError(error: Throwable) {
@@ -177,7 +181,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun refreshError(error: Throwable) {
         if (!getAuthToken().isBlank()) {
-            Toast.makeText(this, "Refresh Failed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.refresh_failed), Toast.LENGTH_SHORT).show()
         }
     }
 }

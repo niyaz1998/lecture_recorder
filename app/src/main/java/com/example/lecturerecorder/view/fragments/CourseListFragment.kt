@@ -101,7 +101,11 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
         requireView().requestFocus()
         requireView().setOnKeyListener { view, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
+                Snackbar.make(
+                    requireView(),
+                    getString(R.string.use_home_button_to_exit),
+                    Snackbar.LENGTH_SHORT
+                )
                     .show()
                 true
             } else {
@@ -244,8 +248,9 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     // UTILS ###########################################################################
 
     override fun onDestroy() {
-        compositeDisposable.dispose()
-        compositeDisposable.clear()
+        if (this::compositeDisposable.isInitialized) {
+            compositeDisposable.clear()
+        }
         super.onDestroy()
     }
 
@@ -282,7 +287,8 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
                 elem.description ?: ""
             )
         } else {
-            Toast.makeText(requireContext(), getString(R.string.not_your_course), Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.not_your_course), Toast.LENGTH_LONG)
+                .show()
         }
     }
 

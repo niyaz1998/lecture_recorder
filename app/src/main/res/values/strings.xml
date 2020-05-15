@@ -80,4 +80,5 @@
     <string name="topic_create_error">Topic Creation Error</string>
     <string name="topic_put">Topic Put</string>
     <string name="topic_put_error">Topic Put Error</string>
+    <string name="refresh_failed">Refresh Failed</string>
 </resources>

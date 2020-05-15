@@ -9,7 +9,10 @@ import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.ListElement
 import com.example.lecturerecorder.model.ListElementType
 
-class ListAdapter(private val list: List<ListElement>, private val onSelectListener: OnSelectListener) :
+class ListAdapter(
+    private val list: List<ListElement>,
+    private val onSelectListener: OnSelectListener
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnSelectListener {
@@ -21,8 +24,15 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
         fun bind(element: ListElement)
     }
 
-    class DetailedViewHolder(inflater: LayoutInflater, parent: ViewGroup, listener: OnSelectListener) : RecyclerView.ViewHolder(inflater.inflate(
-        R.layout.list_element_detailed, parent, false)), View.OnClickListener, View.OnLongClickListener, ListElementViewHolder {
+    class DetailedViewHolder(
+        inflater: LayoutInflater,
+        parent: ViewGroup,
+        listener: OnSelectListener
+    ) : RecyclerView.ViewHolder(
+        inflater.inflate(
+            R.layout.list_element_detailed, parent, false
+        )
+    ), View.OnClickListener, View.OnLongClickListener, ListElementViewHolder {
         private var mTitleView: TextView? = null
         private var mDescriptionView: TextView? = null
         private var mInfoView: TextView? = null
@@ -53,8 +63,12 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
         }
     }
 
-    class ShortViewHolder(inflater: LayoutInflater, parent: ViewGroup, listener: OnSelectListener) : RecyclerView.ViewHolder(inflater.inflate(
-        R.layout.list_element_short, parent, false)), View.OnClickListener, View.OnLongClickListener, ListElementViewHolder {
+    class ShortViewHolder(inflater: LayoutInflater, parent: ViewGroup, listener: OnSelectListener) :
+        RecyclerView.ViewHolder(
+            inflater.inflate(
+                R.layout.list_element_short, parent, false
+            )
+        ), View.OnClickListener, View.OnLongClickListener, ListElementViewHolder {
         private var mTitleView: TextView? = null
         private var onSelectListener: OnSelectListener? = null
 
@@ -79,11 +93,17 @@ class ListAdapter(private val list: List<ListElement>, private val onSelectListe
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return when(viewType) {
-            ListElementType.Detailed.ordinal -> DetailedViewHolder(inflater, parent, onSelectListener)
+        return when (viewType) {
+            ListElementType.Detailed.ordinal -> DetailedViewHolder(
+                inflater,
+                parent,
+                onSelectListener
+            )
             else -> ShortViewHolder(inflater, parent, onSelectListener)
         }
     }
