@@ -49,15 +49,10 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     private val model: ListViewModel by activityViewModels()
     private lateinit var broadcastReceiver: BroadcastReceiver
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recycler_list, container, false)
     }
 
@@ -161,7 +156,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
                         "${it.name} ${getString(R.string.owned_addition_text)}"
                     } else {
                         it.name
-                    }, null, null, it.id, it.isOwner
+                    }, null, null, it.id, true
                 )
             }
 
@@ -284,7 +279,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
     override fun onLongSelect(position: Int) {
         val elem = model.lectures.value?.get(position) ?: return@onLongSelect
-        if (elem.isEditable) {
+        if (model.isCourseOwned.value != null && model.isCourseOwned.value!!) {
             createDeleteConfirmation(elem.id, elem.title)
         } else {
             Toast.makeText(

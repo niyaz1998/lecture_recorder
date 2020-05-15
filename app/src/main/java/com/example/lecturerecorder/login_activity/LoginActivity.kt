@@ -23,13 +23,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.TypeAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_login.*
-import retrofit2.HttpException
 
 
 class LoginActivity : AppCompatActivity() {
@@ -116,7 +113,8 @@ class LoginActivity : AppCompatActivity() {
             RestClient.authService.register(AuthCredentials(username, password))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::registerResponse, this::registerError))
+                .subscribe(this::registerResponse, this::registerError)
+        )
     }
 
     private fun registerResponse(resp: RegisterResponse) {

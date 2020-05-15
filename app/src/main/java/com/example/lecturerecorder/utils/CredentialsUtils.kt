@@ -5,7 +5,6 @@ import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.ErrorResponse
 import com.google.gson.Gson
 import retrofit2.HttpException
-import java.lang.Exception
 
 fun storeAuthToken(token: String) {
     val context = LectureRecorder.appContext

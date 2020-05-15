@@ -40,14 +40,6 @@ object RestClient {
             }
             response
         }
-        /*
-        addInterceptor {
-            val original = it.request();
-            val requestBuilder = original.newBuilder().method(original.method(), original.body());
-            val request = requestBuilder.build();
-            it.proceed(request);
-        }
-         */
     }
 
     private val retrofit = Retrofit.Builder().apply {

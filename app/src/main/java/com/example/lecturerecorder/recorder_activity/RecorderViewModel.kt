@@ -105,7 +105,7 @@ class RecorderViewModel(
             notes.size,
             NoteResponse(
                 text = "",
-                timestamp = getSecondsFromStartTime().toInt(),
+                timestamp = getSecondsFromStartTime(),
                 lectureId = 0,
                 picture = "",
                 id = -1
@@ -125,13 +125,5 @@ class RecorderViewModel(
     fun onTextChangedRemove(index: Int, text: String) {
         notes[index].text = text
         // printData()
-    }
-
-    private fun printData() {
-        Log.d("Niyaz", fileName)
-
-        notes.forEach {
-            Log.d("Niyaz", "${it.timestamp}:${it.text}")
-        }
     }
 }

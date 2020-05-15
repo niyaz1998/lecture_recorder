@@ -64,4 +64,20 @@
     <string name="registered_successfully">Registered Successfully</string>
     <string name="course_unsubscribed">Course Unsubscribed</string>
     <string name="use_home_button_to_exit">Use Home button to exit</string>
+    <string name="reg_suc">Registered Successfully</string>
+    <string name="notes_load_error">Notes Load Error</string>
+    <string name="no_courses">No courses available here</string>
+    <string name="course_create_error">Course Creation Error</string>
+    <string name="not_your_course">This is not your course</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="lectures">Lectures</string>
+    <string name="courses_subscribed">Course Subscribed</string>
+    <string name="courses_subscribe_error">Course Subscribe Error</string>
+    <string name="this_is_not_your_course">This is not your lecture</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="topic_create_error">Topic Creation Error</string>
+    <string name="topic_put">Topic Put</string>
+    <string name="topic_put_error">Topic Put Error</string>
 </resources>

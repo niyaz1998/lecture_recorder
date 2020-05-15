@@ -274,7 +274,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
 
     override fun onLongSelect(position: Int) {
         val elem = model.courses.value?.get(position) ?: return@onLongSelect
-        if (elem.isEditable) {
+        if (model.isTopicOwned.value != null && model.isTopicOwned.value!!) {
             createEditDialog(
                 model.selectedTopicId.value ?: 0,
                 elem.id,
@@ -282,7 +282,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
                 elem.description ?: ""
             )
         } else {
-            Toast.makeText(requireContext(), "This is not your course", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.not_your_course), Toast.LENGTH_LONG).show()
         }
     }
 
