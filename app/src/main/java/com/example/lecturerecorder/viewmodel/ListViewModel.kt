@@ -12,7 +12,7 @@ class ListViewModel: ViewModel() {
     val subscriptions = MutableLiveData<List<ListElement>>(emptyList())
 
     /*
-    чтобы запомнить текущие лекции и потом открыыть сцену с превью лекции
+    чтобы запомнить текущие лекции и потом открыть сцену с превью лекции
      */
     val lectureModels = MutableLiveData<List<LectureResponse>>(emptyList())
 

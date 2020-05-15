@@ -96,7 +96,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener,
         // override back button actions
         requireView().isFocusableInTouchMode = true
         requireView().requestFocus()
-        requireView().setOnKeyListener { view, keyCode, event ->
+        requireView().setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
                     .show()
@@ -121,7 +121,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener,
     }
 
     private fun handleResponse(response: SubResponse) {
-        val mappedList = response.courses?.map {
+        val mappedList = response.courses.map {
             ListElement(
                 ListElementType.Detailed,
                 it.name,

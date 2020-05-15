@@ -139,6 +139,7 @@ class MainActivity : AppCompatActivity(), NavigationContract.Container {
         }
     }
 
+    // show/hide subscribe button in header
     override fun setSubscribeButtonVisibility(state: Boolean) {
         if (state) {
             subscribe_button?.visibility = View.VISIBLE
@@ -147,6 +148,7 @@ class MainActivity : AppCompatActivity(), NavigationContract.Container {
         }
     }
 
+    // set bottom navigation to first element
     override fun resetNavigation() {
         skipAction = true
         bottom_nav.selectedItemId = R.id.bottom_nav_search

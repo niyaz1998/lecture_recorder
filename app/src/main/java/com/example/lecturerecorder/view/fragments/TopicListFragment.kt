@@ -92,7 +92,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
         // override back button actions
         requireView().isFocusableInTouchMode = true
         requireView().requestFocus()
-        requireView().setOnKeyListener { view, keyCode, event ->
+        requireView().setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
                     .show()
