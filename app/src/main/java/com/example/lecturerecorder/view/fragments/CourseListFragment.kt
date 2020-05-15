@@ -113,7 +113,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
             recyclerView.adapter = viewAdapter
             model.courses.postValue(emptyList())
             showEmptyListIndicator(true)
-            setEmptyListText("No courses available here")
+            setEmptyListText(getString(R.string.no_courses))
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
@@ -141,12 +141,12 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     }
 
     private fun courseCreated(response: CourseResponse) {
-        Toast.makeText(requireContext(), "Course Created", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.course_created), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
     private fun courseCreateError(error: Throwable) {
-        Toast.makeText(requireContext(), "Course Creation Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.course_create_error), Toast.LENGTH_SHORT).show()
     }
 
     // PUT COURSE ###########################################################################
@@ -160,12 +160,12 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     }
 
     private fun coursePut(response: CourseResponse) {
-        Toast.makeText(requireContext(), "Course Put", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),  getString(R.string.course_updated), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
     private fun coursePutError(error: Throwable) {
-        Toast.makeText(requireContext(), "Course Put Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.course_update_error), Toast.LENGTH_SHORT).show()
     }
 
     // DELETE COURSE ###########################################################################
@@ -179,12 +179,12 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
     }
 
     private fun courseDeleted() {
-        Toast.makeText(requireContext(), "Course Deleted", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.course_deleted), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
     private fun courseDeleteError(error: Throwable) {
-        Toast.makeText(requireContext(), "Course Delete Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.course_delete_error), Toast.LENGTH_SHORT).show()
     }
 
     // UTILS ###########################################################################
@@ -222,7 +222,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
         if (elem.isEditable) {
             createEditDialog(model.selectedTopicId.value?:0, elem.id, elem.title, elem.description?:"")
         } else {
-            Toast.makeText(requireContext(), "This is not your course", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.not_your_course), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -241,7 +241,7 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
 
     private fun createAdditionDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("New Course")
+        builder.setTitle(getString(R.string.new_course))
         val innerView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.creation_dialog_layout, null)
 
@@ -254,13 +254,13 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
             createCourseRequest(model.selectedTopicId.value!!, nt, dt)
         }
 
-        builder.setNeutralButton("Cancel") {_, _->}
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->}
         builder.show()
     }
 
     private fun createEditDialog(topicId: Int, courseId: Int, name: String, description: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Edit Course")
+        builder.setTitle(getString(R.string.edit_course))
         val innerView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.creation_dialog_layout, null)
 
@@ -270,30 +270,30 @@ class CourseListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationC
         descrField.editText?.setText(description)
 
         builder.setView(innerView)
-        builder.setPositiveButton("Save") { dialog, which ->
+        builder.setPositiveButton(getString(R.string.save)) { dialog, which ->
 
             val nt = nameField.editText?.text.toString().trim()
             val dt = descrField.editText?.text.toString().trim()
             putCourseRequest(topicId, courseId, nt, dt)
         }
 
-        builder.setNegativeButton("Delete") {dialog, _->
+        builder.setNegativeButton(getString(R.string.delete)) {dialog, _->
             createDeleteConfirmation(topicId, courseId, name)
             dialog.dismiss()
         }
 
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->} // do nothing
         builder.show()
     }
 
     private fun createDeleteConfirmation(topicId: Int, courseId: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Are you sure?")
-        builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") {_, _->
+        builder.setTitle(getString(R.string.are_you_sure))
+        builder.setMessage("${getString(R.string.delete)} $name")
+        builder.setPositiveButton(getString(R.string.delete)) {_, _->
             deleteCourseRequest(topicId, courseId)
         }
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->} // do nothing
         builder.show()
     }
 

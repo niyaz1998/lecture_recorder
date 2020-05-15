@@ -20,23 +20,6 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_listener.*
 
-
-var stubLecture = LectureResponse(
-    name = "stub lecture",
-    note = listOf(
-        NoteResponse(timestamp = 10, text = "note 1", lectureId = 0, picture = "", id = -1),
-        NoteResponse(timestamp = 20, text = "note 2", lectureId = 0, picture = "", id = -1),
-        NoteResponse(timestamp = 30, text = "note 3", lectureId = 0, picture = "", id = -1),
-        NoteResponse(timestamp = 40, text = "note 4", lectureId = 0, picture = "", id = -1),
-        NoteResponse(timestamp = 50, text = "note 5", lectureId = 0, picture = "", id = -1),
-        NoteResponse(timestamp = 60, text = "note 6", lectureId = 0, picture = "", id = -1)
-    ),
-    audioFile = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3",
-    courseId = -1,
-    id = -1,
-    isOwner = false
-)
-
 class ListenerActivity : AppCompatActivity() {
 
     companion object {
@@ -52,9 +35,7 @@ class ListenerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_listener)
 
         compositeDisposable = CompositeDisposable()
-        lectureRecord =
-            if (intent.extras?.getParcelable<LectureResponse>(ARGUMENTS) != null)
-                intent.extras?.getParcelable(ARGUMENTS)!! else stubLecture
+        lectureRecord = intent.extras?.getParcelable(ARGUMENTS)!!
 
         listenerViewModel = ListenerViewModel(
             lectureRecord,
@@ -85,7 +66,11 @@ class ListenerActivity : AppCompatActivity() {
     }
 
     private fun notesLoadError(error: Throwable) {
-        Toast.makeText(this, "Notes Load Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this, resources.getString(R.string.notes_load_error),
+            Toast.LENGTH_SHORT
+        )
+            .show()
     }
 
     fun setButtonState(state: MainButtonState) {

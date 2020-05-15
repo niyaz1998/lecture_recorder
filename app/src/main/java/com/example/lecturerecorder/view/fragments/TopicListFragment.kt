@@ -42,11 +42,6 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
 
     private val model: ListViewModel by activityViewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -108,7 +103,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
             recyclerView.adapter = viewAdapter
             model.topics.postValue(emptyList())
             showEmptyListIndicator(true)
-            setEmptyListText("No topics available here")
+            setEmptyListText(getString(R.string.no_topics_available_here))
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
@@ -135,12 +130,12 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     }
 
     private fun topicCreated(response: TopicResponse) {
-        Toast.makeText(requireContext(), "Topic Created", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.topic_created), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
     private fun topicCreateError(error: Throwable) {
-        Toast.makeText(requireContext(), "Topic Creation Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.topic_create_error), Toast.LENGTH_SHORT).show()
     }
 
     // PUT TOPIC ###########################################################################
@@ -154,12 +149,12 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     }
 
     private fun topicPut(reponse: TopicResponse) {
-        Toast.makeText(requireContext(), "Topic Put", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.topic_put), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
     private fun topicPutError(error: Throwable) {
-        Toast.makeText(requireContext(), "Topic Put Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.topic_put_error), Toast.LENGTH_SHORT).show()
     }
 
     // DELETE TOPIC ###########################################################################
@@ -173,12 +168,12 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     }
 
     private fun topicDeleted() {
-        Toast.makeText(requireContext(), "Topic Deleted", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.topic_deleted), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
     private fun topicDeleteError(error: Throwable) {
-        Toast.makeText(requireContext(), "Topic Delete Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.topic_delete_error), Toast.LENGTH_SHORT).show()
     }
 
     // UTILS ###########################################################################
@@ -209,7 +204,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
         if (elem.isEditable){
             createEditDialog(elem.id, elem.title, elem.description?:"")
         } else {
-            Toast.makeText(requireContext(), "This is not your topic", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.this_is_not_your_topic), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -227,7 +222,7 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
 
     private fun createAdditionDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("New Topic")
+        builder.setTitle(getString(R.string.new_topic))
         val innerView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.creation_dialog_layout, null)
 
@@ -240,13 +235,13 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
             createTopicRequest(nt, dt)
         }
 
-        builder.setNeutralButton("Cancel") {_, _->}
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->}
         builder.show()
     }
 
     private fun createEditDialog(id: Int, name: String, description: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Edit Topic")
+        builder.setTitle(getString(R.string.edit_topic))
         val innerView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.creation_dialog_layout, null)
 
@@ -256,30 +251,30 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
         descrField.editText?.setText(description)
 
         builder.setView(innerView)
-        builder.setPositiveButton("Save") { dialog, which ->
+        builder.setPositiveButton(getString(R.string.save)) { dialog, which ->
 
             val nt = nameField.editText?.text.toString().trim()
             val dt = descrField.editText?.text.toString().trim()
             putTopicRequest(id, nt, dt)
         }
 
-        builder.setNegativeButton("Delete") {dialog, _->
+        builder.setNegativeButton(getString(R.string.delete)) {dialog, _->
             createDeleteConfirmation(id, name)
             dialog.dismiss()
         }
 
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->} // do nothing
         builder.show()
     }
 
     private fun createDeleteConfirmation(id: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Are you sure?")
-        builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") {_, _->
+        builder.setTitle(getString(R.string.are_you_sure))
+        builder.setMessage("${getString(R.string.delete)} $name")
+        builder.setPositiveButton(getString(R.string.delete)) {_, _->
             deleteTopicRequest(id)
         }
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->} // do nothing
         builder.show()
     }
 

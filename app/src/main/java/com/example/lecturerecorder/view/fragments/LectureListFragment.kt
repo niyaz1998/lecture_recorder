@@ -79,7 +79,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             SpacedDividerItemDecoration(context)
         )
 
-        setActionBarTitle("Lectures")
+        setActionBarTitle(getString(R.string.lectures))
 
         val fab = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add)
         fab.setOnClickListener {
@@ -144,7 +144,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             model.lectures.postValue(emptyList())
             model.lectureModels.postValue(emptyList())
             showEmptyListIndicator(true)
-            setEmptyListText("No lectures available here")
+            setEmptyListText(getString(R.string.no_lectures_available_here))
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
@@ -173,13 +173,13 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     private fun lectureDeleted() {
-        Toast.makeText(requireContext(), "Lecture Deleted", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.lecture_deleted), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
 
     private fun lectureDeleteError(error: Throwable) {
-        Toast.makeText(requireContext(), "Lecture Delete Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.lecture_delete_error), Toast.LENGTH_SHORT).show()
     }
 
     // SUBSCRIBE TO COURSE ###########################################################################
@@ -194,12 +194,12 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     private fun courseSubscribed() {
-        Toast.makeText(requireContext(), "Course Subscribed", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.courses_subscribed), Toast.LENGTH_SHORT).show()
     }
 
 
     private fun courseSubscribeError(error: Throwable) {
-        Toast.makeText(requireContext(), "Course Subscribe Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.courses_subscribe_error), Toast.LENGTH_SHORT).show()
     }
 
     // UTILS ###########################################################################
@@ -243,7 +243,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         if (elem.isEditable){
             createDeleteConfirmation(elem.id, elem.title)
         } else {
-            Toast.makeText(requireContext(), "This is not your lecture", Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), getString(R.string.this_is_not_your_course), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -265,42 +265,14 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         requireView().findViewById<TextView>(R.id.empty_list_text).text = text
     }
 
-//    private fun createEditDialog(id: Int, name: String, description: String) {
-//        val builder = AlertDialog.Builder(requireContext())
-//        builder.setTitle("Edit Topic")
-//        val innerView: View = LayoutInflater.from(requireContext())
-//            .inflate(R.layout.creation_dialog_layout, null)
-//
-//        val nameField = innerView.findViewById<TextInputLayout>(R.id.name_field)
-//        val descrField = innerView.findViewById<TextInputLayout>(R.id.description_field)
-//        nameField.editText?.setText(name)
-//        descrField.editText?.setText(description)
-//
-//        builder.setView(innerView)
-//        builder.setPositiveButton("Save") { dialog, which ->
-//
-//            val nt = nameField.editText?.text.toString().trim()
-//            val dt = descrField.editText?.text.toString().trim()
-//            putTopicRequest(id, nt, dt)
-//        }
-//
-//        builder.setNegativeButton("Delete") {dialog, _->
-//            createDeleteConfirmation(id, name)
-//            dialog.dismiss()
-//        }
-//
-//        builder.setNeutralButton("Cancel") {_, _->} // do nothing
-//        builder.show()
-//    }
-
     private fun createDeleteConfirmation(lectureId: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Are you sure?")
-        builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") { _, _ ->
+        builder.setTitle(getString(R.string.are_you_sure))
+        builder.setMessage("${getString(R.string.delete)} $name")
+        builder.setPositiveButton(getString(R.string.delete)) { _, _ ->
             deleteLectureRequest(lectureId)
         }
-        builder.setNeutralButton("Cancel") { _, _ -> } // do nothing
+        builder.setNeutralButton(getString(R.string.cancel)) { _, _ -> } // do nothing
         builder.show()
     }
 

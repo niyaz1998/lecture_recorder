@@ -54,7 +54,7 @@
         app:icon="@drawable/ic_plus"
         app:iconTint="@color/white"
         app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         app:layout_anchor="@id/list_container"
         app:layout_anchorGravity="bottom|right|end"
         android:backgroundTint="@color/colorPrimary"/>

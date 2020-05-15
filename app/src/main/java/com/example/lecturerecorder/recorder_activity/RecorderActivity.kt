@@ -16,8 +16,6 @@ import com.example.lecturerecorder.utils.formatTime
 import kotlinx.android.synthetic.main.activity_recorder.*
 import java.util.*
 
-
-private const val LOG_TAG = "RecorderActivity"
 private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
 
 class RecorderActivity : AppCompatActivity() {

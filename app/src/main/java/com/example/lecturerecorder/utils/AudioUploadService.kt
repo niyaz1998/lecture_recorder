@@ -27,10 +27,6 @@ class AudioUploadService : JobIntentService() {
     var name: String? = null
     var notes: List<NoteResponse>? = null
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     override fun onHandleWork(@NonNull intent: Intent) {
         /**
          * Download/Upload of file
@@ -84,17 +80,14 @@ class AudioUploadService : JobIntentService() {
     }
 
     private fun onErrors(throwable: Throwable) {
-        sendBroadcastMeaasge("Error in file upload " + throwable.message)
         Log.e(TAG, "onErrors: ", throwable)
     }
 
     private fun onProgress(progress: Double) {
-        sendBroadcastMeaasge("Uploading in progress... " + (100 * progress).toInt())
         Log.i(TAG, "onProgress: $progress")
     }
 
     private fun onSuccess() {
-        sendBroadcastMeaasge("File uploading successful ")
         Log.i(TAG, "onSuccess: File Uploaded")
     }
 
@@ -110,14 +103,7 @@ class AudioUploadService : JobIntentService() {
             } catch (e: Throwable) {
                 e.printStackTrace()
             }
-            // RestClient.listService.putNote(note.id, note = note)
         }
-    }
-
-    fun sendBroadcastMeaasge(message: String?) {
-        val localIntent = Intent("my.own.broadcast")
-        localIntent.putExtra("result", message)
-        LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
     }
 
     private fun createRequestBodyFromFile(file: File, mimeType: String): RequestBody {
@@ -128,9 +114,6 @@ class AudioUploadService : JobIntentService() {
         return RequestBody.create(MediaType.parse("text/plain"), mText)
     }
 
-    /**
-     * return multi part body in format of FlowableEmitter
-     */
     private fun createMultipartBody(
         filePath: String,
         emitter: FlowableEmitter<Double>
@@ -159,11 +142,8 @@ class AudioUploadService : JobIntentService() {
     }
 
     companion object {
-        private const val TAG = "FileUploadService"
+        private const val TAG = "AudioUploadService"
 
-        /**
-         * Unique job ID for this service.
-         */
         private const val JOB_ID = 102
         fun enqueueWork(context: Context, intent: Intent?) {
             enqueueWork(

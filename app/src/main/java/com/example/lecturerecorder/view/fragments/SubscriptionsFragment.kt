@@ -75,13 +75,10 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
             SpacedDividerItemDecoration(context)
         )
 
-        setActionBarTitle("Subscribed Courses")
+        setActionBarTitle(getString(R.string.courses_subscribed))
 
         val fab = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add)
         fab.visibility = getVisibGone(true)
-//        fab.setOnClickListener {
-//            (activity as NavigationContract.Container).goToRecorderView(model.selectedCourseId.value!!)
-//        }
 
         (activity as NavigationContract.Container).setHeaderVisibility(false)
 
@@ -111,7 +108,7 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
             recyclerView.adapter = viewAdapter
             model.subscriptions.postValue(emptyList())
             showEmptyListIndicator(true)
-            setEmptyListText("No lectures available here")
+            setEmptyListText(getString(R.string.no_lectures_available_here))
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
@@ -138,13 +135,13 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
     }
 
     private fun courseUnsub() {
-        Toast.makeText(requireContext(), "Lecture Deleted", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.lecture_deleted), Toast.LENGTH_SHORT).show()
         loadAndSetData()
     }
 
 
     private fun courseUnsubError(error: Throwable) {
-        Toast.makeText(requireContext(), "Lecture Delete Error", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.lecture_delete_error), Toast.LENGTH_SHORT).show()
     }
 
     // UTILS ###########################################################################
@@ -191,12 +188,12 @@ class SubscriptionsFragment : Fragment(), ListAdapter.OnSelectListener, Navigati
 
     private fun createDeleteConfirmation(courseId: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Are you sure?")
-        builder.setMessage("Unsubscribe $name")
-        builder.setPositiveButton("Unsubscribe") {_, _->
+        builder.setTitle(getString(R.string.are_you_sure))
+        builder.setMessage("${getString(R.string.unsubscribe)} $name")
+        builder.setPositiveButton(getString(R.string.unsubscribe)) {_, _->
             unsubCourseRequest(courseId)
         }
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel)) {_, _->} // do nothing
         builder.show()
     }
 
