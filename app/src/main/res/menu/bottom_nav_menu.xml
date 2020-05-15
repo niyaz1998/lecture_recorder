@@ -3,13 +3,9 @@
     <item
         android:id="@+id/bottom_nav_search"
         android:icon="@drawable/icon_search"
-        android:title="Search" />
-<!--    <item-->
-<!--        android:id="@+id/bottom_nav_my"-->
-<!--        android:icon="@drawable/icon_person"-->
-<!--        android:title="My" />-->
+        android:title="@string/search" />
     <item
-        android:id="@+id/bottom_nav_settings"
+        android:id="@+id/bottom_nav_subscriptions"
         android:icon="@drawable/ic_like"
-        android:title="Settings" />
+        android:title="@string/subscriptions" />
 </menu>

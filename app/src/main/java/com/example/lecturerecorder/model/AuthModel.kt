@@ -9,6 +9,11 @@ data class AuthCredentials (
     val password: String
 )
 
+data class TokenOnly (
+    @SerializedName("token")
+    val token: String
+)
+
 data class RegisterResponse (
     @SerializedName("id")
     val id: Int,

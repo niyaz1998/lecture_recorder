@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,10 +32,12 @@ import com.example.lecturerecorder.utils.parseHttpErrorMessage
 import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.viewmodel.ListViewModel
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
+import kotlinx.android.synthetic.main.fragment_recycler_list.view.*
 
 class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
 
@@ -43,9 +46,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var compositeDisposable: CompositeDisposable
-
     private val model: ListViewModel by activityViewModels()
-
     private lateinit var broadcastReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,41 +66,59 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
         compositeDisposable = CompositeDisposable()
 
+        // setup recycler view
         viewManager = LinearLayoutManager(activity)
-
         viewAdapter = ListAdapter(emptyList(), this)
-
         recyclerView = view.findViewById<RecyclerView>(list_container.id).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
         }
-
         recyclerView.addItemDecoration(
             SpacedDividerItemDecoration(context)
         )
 
-        setActionBarTitle("Lectures")
+        // setup appbar
+        setActionBarTitle(getString(R.string.lectures_cap))
+        (activity as NavigationContract.Container).enableBackButton(true)
 
+        // setup bottom floating button
         val fab = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add)
         fab.setOnClickListener {
             (activity as NavigationContract.Container).goToRecorderView(model.selectedCourseId.value!!)
         }
 
+        // setup header under appbar
         (activity as NavigationContract.Container).setHeaderVisibility(true)
+        (activity as NavigationContract.Container).setSubscribeButtonVisibility(true)
         (activity as NavigationContract.Container).setHeaderTitle(
             model.selectedCourseName.value ?: ""
         )
 
-        val srl = view.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
-        srl.setOnRefreshListener {
+        // setup swipe refresh
+        swiperefresh.setOnRefreshListener {
             loadAndSetData()
         }
 
+        // disable floating button for non-owned course
         if (model.isCourseOwned.value != null && !model.isCourseOwned.value!!) {
-            view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add).visibility = View.INVISIBLE
+            fab_add.visibility = View.INVISIBLE
         }
 
+        // override back button actions
+        requireView().isFocusableInTouchMode = true
+        requireView().requestFocus()
+        requireView().setOnKeyListener { _, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
+                    .show()
+                true
+            } else {
+                false
+            }
+        }
+
+        // update data
         loadAndSetData()
     }
 
@@ -123,6 +142,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     fun loadAndSetData() {
+        requireView().swiperefresh?.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.getLectures(
                 model.selectedCourseId.value ?: return@loadAndSetData
@@ -135,7 +155,15 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
 
     private fun handleResponse(lectures: List<LectureResponse>?) {
         val mappedList =
-            lectures?.map { ListElement(ListElementType.Short, if(it.isOwner){"${it.name} (my)"}else{it.name}, null, null, it.id, it.isOwner) }
+            lectures?.map {
+                ListElement(
+                    ListElementType.Short, if (it.isOwner) {
+                        "${it.name} ${getString(R.string.owned_addition_text)}"
+                    } else {
+                        it.name
+                    }, null, null, it.id, it.isOwner
+                )
+            }
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -144,7 +172,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             model.lectures.postValue(emptyList())
             model.lectureModels.postValue(emptyList())
             showEmptyListIndicator(true)
-            setEmptyListText("No lectures available here")
+            setEmptyListText(getString(R.string.no_lectures_available_here))
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
@@ -152,18 +180,19 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
             model.lectureModels.postValue(lectures)
             showEmptyListIndicator(false)
         }
-        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
+        swiperefresh?.isRefreshing = false
     }
 
     private fun handleError(error: Throwable) {
         val message = parseHttpErrorMessage(error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
+        swiperefresh?.isRefreshing = false
     }
 
     // DELETE TOPIC ###########################################################################
 
     private fun deleteLectureRequest(lectureId: Int) {
+        swiperefresh.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.deleteLecture(lectureId)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -173,18 +202,26 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     private fun lectureDeleted() {
-        Toast.makeText(requireContext(), "Lecture Deleted", Toast.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.lecture_deleted), Snackbar.LENGTH_SHORT)
+            .show()
         loadAndSetData()
     }
 
 
     private fun lectureDeleteError(error: Throwable) {
-        Toast.makeText(requireContext(), "Lecture Delete Error", Toast.LENGTH_SHORT).show()
+        val message = parseHttpErrorMessage(error)
+        Snackbar.make(
+            requireView(),
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
+        swiperefresh?.isRefreshing = false
     }
 
     // SUBSCRIBE TO COURSE ###########################################################################
 
     private fun subscribeCourseRequest(courseId: Int) {
+        swiperefresh?.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.subscribeCourse(courseId)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -194,12 +231,20 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     private fun courseSubscribed() {
-        Toast.makeText(requireContext(), "Course Subscribed", Toast.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.course_subscribed), Snackbar.LENGTH_SHORT)
+            .show()
+        swiperefresh?.isRefreshing = false
     }
 
 
     private fun courseSubscribeError(error: Throwable) {
-        Toast.makeText(requireContext(), "Course Subscribe Error", Toast.LENGTH_SHORT).show()
+        val message = parseHttpErrorMessage(error)
+        Snackbar.make(
+            requireView(),
+            message,
+            Snackbar.LENGTH_SHORT
+        ).show()
+        swiperefresh?.isRefreshing = false
     }
 
     // UTILS ###########################################################################
@@ -209,7 +254,7 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         compositeDisposable.clear()
     }
 
-    fun setActionBarTitle(text: String) {
+    private fun setActionBarTitle(text: String) {
         (activity as AppCompatActivity).supportActionBar?.title = text;
     }
 
@@ -235,15 +280,18 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         } catch (e: Throwable) {
             e.printStackTrace()
         }
-        //Toast.makeText(requireContext(), "Open Preview Activity Here", Toast.LENGTH_LONG).show()
     }
 
     override fun onLongSelect(position: Int) {
         val elem = model.lectures.value?.get(position) ?: return@onLongSelect
-        if (elem.isEditable){
+        if (elem.isEditable) {
             createDeleteConfirmation(elem.id, elem.title)
         } else {
-            Toast.makeText(requireContext(), "This is not your lecture", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.this_is_not_your_lecture),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -265,42 +313,14 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
         requireView().findViewById<TextView>(R.id.empty_list_text).text = text
     }
 
-//    private fun createEditDialog(id: Int, name: String, description: String) {
-//        val builder = AlertDialog.Builder(requireContext())
-//        builder.setTitle("Edit Topic")
-//        val innerView: View = LayoutInflater.from(requireContext())
-//            .inflate(R.layout.creation_dialog_layout, null)
-//
-//        val nameField = innerView.findViewById<TextInputLayout>(R.id.name_field)
-//        val descrField = innerView.findViewById<TextInputLayout>(R.id.description_field)
-//        nameField.editText?.setText(name)
-//        descrField.editText?.setText(description)
-//
-//        builder.setView(innerView)
-//        builder.setPositiveButton("Save") { dialog, which ->
-//
-//            val nt = nameField.editText?.text.toString().trim()
-//            val dt = descrField.editText?.text.toString().trim()
-//            putTopicRequest(id, nt, dt)
-//        }
-//
-//        builder.setNegativeButton("Delete") {dialog, _->
-//            createDeleteConfirmation(id, name)
-//            dialog.dismiss()
-//        }
-//
-//        builder.setNeutralButton("Cancel") {_, _->} // do nothing
-//        builder.show()
-//    }
-
     private fun createDeleteConfirmation(lectureId: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Are you sure?")
-        builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") { _, _ ->
+        builder.setTitle(getString(R.string.are_you_sure))
+        builder.setMessage("${getString(R.string.delete_cap)} $name")
+        builder.setPositiveButton(getString(R.string.delete_cap)) { _, _ ->
             deleteLectureRequest(lectureId)
         }
-        builder.setNeutralButton("Cancel") { _, _ -> } // do nothing
+        builder.setNeutralButton(getString(R.string.cancel_cap)) { _, _ -> } // do nothing
         builder.show()
     }
 
@@ -309,17 +329,16 @@ class LectureListFragment : Fragment(), ListAdapter.OnSelectListener, Navigation
     }
 
     override fun navigateToAll() {
-        model.isPersonalFilterEnabled.postValue(false)
-        loadAndSetData()
+        // do nothing
     }
 
     override fun navigateToSubscriptions() {
-        model.isPersonalFilterEnabled.postValue(true)
+        compositeDisposable.dispose()
         findNavController().navigate(R.id.action_lectureListFragment_to_subscriptionsFragment)
     }
 
-    override fun navigateToPersonal() {
-        model.isPersonalFilterEnabled.postValue(false)
-        loadAndSetData()
+    override fun navigateBack() {
+        compositeDisposable.dispose()
+        findNavController().navigate(R.id.action_lectureListFragment_to_courseListFragment)
     }
 }

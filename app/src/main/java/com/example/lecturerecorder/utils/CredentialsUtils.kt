@@ -1,14 +1,9 @@
 package com.example.lecturerecorder.utils
 
-import android.app.Activity
 import android.content.Context
-import android.provider.Settings.Global.getString
-import android.view.View
 import com.example.lecturerecorder.R
 import com.example.lecturerecorder.model.ErrorResponse
 import com.google.gson.Gson
-import okhttp3.Interceptor
-import okhttp3.Response
 import retrofit2.HttpException
 import java.lang.Exception
 
@@ -34,9 +29,9 @@ fun parseHttpErrorMessage(error: Throwable): String {
         val gson = Gson()
         val adapter = gson.getAdapter<ErrorResponse>(ErrorResponse::class.java)
         try {
-            val http_error = adapter.fromJson(body?.string())
-            if (!http_error.message.isNullOrBlank()) {
-                message = http_error.message
+            val httpError = adapter.fromJson(body?.string())
+            if (!httpError.message.isBlank()) {
+                message = httpError.message
             }
         } catch (e: Exception) {
             e.printStackTrace()

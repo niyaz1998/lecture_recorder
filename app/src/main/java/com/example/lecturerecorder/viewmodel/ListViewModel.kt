@@ -10,7 +10,6 @@ class ListViewModel: ViewModel() {
     val courses = MutableLiveData<List<ListElement>>(emptyList())
     val lectures = MutableLiveData<List<ListElement>>(emptyList())
     val subscriptions = MutableLiveData<List<ListElement>>(emptyList())
-    val isPersonalFilterEnabled = MutableLiveData<Boolean>(false)
 
     /*
     чтобы запомнить текущие лекции и потом открыыть сцену с превью лекции

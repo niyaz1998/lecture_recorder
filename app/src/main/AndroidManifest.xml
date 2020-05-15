@@ -21,20 +21,19 @@
         tools:targetApi="m"
         tools:ignore="GoogleAppIndexingWarning"
         android:usesCleartextTraffic="true">
-        <activity android:name=".player_activity.ListenerActivity" />
-        <activity
-            android:name=".view.MainActivity" />
 
         <activity android:name=".login_activity.LoginActivity"
-                  android:theme="@style/AppTheme.Launcher">
+                  android:theme="@style/AppTheme.Launcher"
+                  android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity android:name=".view.MainActivity"/>
         <activity android:name=".recorder_activity.RecorderActivity"/>
+        <activity android:name=".player_activity.ListenerActivity"/>
         <service
             android:name=".utils.AudioUploadService"
             android:permission="android.permission.BIND_JOB_SERVICE" />

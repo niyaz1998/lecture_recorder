@@ -26,11 +26,13 @@ import com.example.lecturerecorder.utils.parseHttpErrorMessage
 import com.example.lecturerecorder.view.adapters.ListAdapter
 import com.example.lecturerecorder.viewmodel.ListViewModel
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_recycler_list.*
+import kotlinx.android.synthetic.main.fragment_recycler_list.view.*
 
 
 class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationContract.Fragment {
@@ -39,12 +41,10 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     private lateinit var viewAdapter: RecyclerView.Adapter<*>
     private lateinit var viewManager: RecyclerView.LayoutManager
     private lateinit var compositeDisposable: CompositeDisposable
-
     private val model: ListViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(
@@ -60,47 +60,79 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
 
         compositeDisposable = CompositeDisposable()
 
+        // setup recycler view
         viewManager = LinearLayoutManager(activity)
-        viewAdapter = ListAdapter(model.topics.value?:emptyList(), this)
-
+        viewAdapter = ListAdapter(model.topics.value ?: emptyList(), this)
         recyclerView = view.findViewById<RecyclerView>(list_container.id).apply {
             setHasFixedSize(true)
             layoutManager = viewManager
             adapter = viewAdapter
         }
-
         recyclerView.addItemDecoration(
             SpacedDividerItemDecoration(context)
         )
-        setActionBarTitle(getString(R.string.topics))
 
-        val fab = view.findViewById<ExtendedFloatingActionButton>(R.id.fab_add)
-        fab.setOnClickListener {
+        // setup appbar
+        setActionBarTitle(getString(R.string.topics))
+        (activity as NavigationContract.Container).enableBackButton(false)
+
+        // setup bottom floating button
+        fab_add?.setOnClickListener {
             createAdditionDialog()
         }
 
+        // setup header under appbar
         (activity as NavigationContract.Container).setHeaderVisibility(false)
 
-        val srl = view.findViewById<SwipeRefreshLayout>(R.id.swiperefresh)
-        srl.setOnRefreshListener {
+        // setup swipe refresh
+        requireView().swiperefresh?.setOnRefreshListener {
             loadAndSetData()
         }
 
+        // override back button actions
+        requireView().isFocusableInTouchMode = true
+        requireView().requestFocus()
+        requireView().setOnKeyListener { view, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                Snackbar.make(requireView(), getString(R.string.use_home_button_to_exit), Snackbar.LENGTH_SHORT)
+                    .show()
+                true
+            } else {
+                false
+            }
+        }
+
+        // update data
         loadAndSetData()
     }
 
     // LOAD LIST DATA ###########################################################################
-    fun loadAndSetData() {
+
+    private fun loadAndSetData() {
+        swiperefresh?.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.getTopics()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::handleResponse, this::handleError))
+                .subscribe(this::handleResponse, this::handleError)
+        )
     }
 
     private fun handleResponse(topics: List<TopicResponse>?) {
-        val mappedList = topics?.map{ ListElement(ListElementType.Detailed, if(it.isOwner){"${it.name} (my)"}else{it.name}, it.description, "${it.courses} ${getString(
-            R.string.courses_lowercase)}", it.id, it.isOwner)}
+        val mappedList = topics?.map {
+            ListElement(
+                ListElementType.Detailed,
+                if (it.isOwner) {
+                    "${it.name} ${getString(R.string.owned_addition_text)}"
+                } else {
+                    it.name
+                },
+                it.description, "${it.courses} ${getString(
+                    R.string.courses_lowercase
+                )}",
+                it.id, it.isOwner
+            )
+        }
 
         if (mappedList.isNullOrEmpty()) {
             // set empty icon
@@ -108,87 +140,106 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
             recyclerView.adapter = viewAdapter
             model.topics.postValue(emptyList())
             showEmptyListIndicator(true)
-            setEmptyListText("No topics available here")
+            setEmptyListText(getString(R.string.no_topics_available_here))
         } else {
             viewAdapter = ListAdapter(mappedList, this)
             recyclerView.adapter = viewAdapter
             model.topics.postValue(mappedList)
             showEmptyListIndicator(false)
         }
-        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
+        swiperefresh?.isRefreshing = false
     }
 
     private fun handleError(error: Throwable) {
         val message = parseHttpErrorMessage(error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        requireView().findViewById<SwipeRefreshLayout>(R.id.swiperefresh).isRefreshing = false
+        swiperefresh?.isRefreshing = false
     }
 
     // CREATE TOPIC ###########################################################################
 
     private fun createTopicRequest(name: String, description: String) {
+        swiperefresh?.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.createTopic(TopicPost(name, description))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::topicCreated, this::topicCreateError))
+                .subscribe(this::topicCreated, this::topicCreateError)
+        )
     }
 
     private fun topicCreated(response: TopicResponse) {
-        Toast.makeText(requireContext(), "Topic Created", Toast.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.topic_created), Snackbar.LENGTH_SHORT)
+            .show()
         loadAndSetData()
     }
 
     private fun topicCreateError(error: Throwable) {
-        Toast.makeText(requireContext(), "Topic Creation Error", Toast.LENGTH_SHORT).show()
+        val message = parseHttpErrorMessage(error)
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
+            .show()
+        swiperefresh?.isRefreshing = false
     }
 
     // PUT TOPIC ###########################################################################
 
     private fun putTopicRequest(id: Int, name: String, description: String) {
+        swiperefresh?.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.putTopic(id, TopicPost(name, description))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::topicPut, this::topicPutError))
+                .subscribe(this::topicPut, this::topicPutError)
+        )
     }
 
     private fun topicPut(reponse: TopicResponse) {
-        Toast.makeText(requireContext(), "Topic Put", Toast.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.topic_updated), Snackbar.LENGTH_SHORT)
+            .show()
         loadAndSetData()
     }
 
     private fun topicPutError(error: Throwable) {
-        Toast.makeText(requireContext(), "Topic Put Error", Toast.LENGTH_SHORT).show()
+        val message = parseHttpErrorMessage(error)
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
+            .show()
+        swiperefresh?.isRefreshing = false
     }
 
     // DELETE TOPIC ###########################################################################
 
     private fun deleteTopicRequest(id: Int) {
+        requireView().swiperefresh?.isRefreshing = true
         compositeDisposable.add(
             RestClient.listService.deleteTopic(id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(this::topicDeleted, this::topicDeleteError))
+                .subscribe(this::topicDeleted, this::topicDeleteError)
+        )
     }
 
     private fun topicDeleted() {
-        Toast.makeText(requireContext(), "Topic Deleted", Toast.LENGTH_SHORT).show()
+        Snackbar.make(requireView(), getString(R.string.topic_deleted), Snackbar.LENGTH_SHORT)
+            .show()
         loadAndSetData()
     }
 
     private fun topicDeleteError(error: Throwable) {
-        Toast.makeText(requireContext(), "Topic Delete Error", Toast.LENGTH_SHORT).show()
+        val message = parseHttpErrorMessage(error)
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
+            .show()
+        swiperefresh?.isRefreshing = false
     }
 
     // UTILS ###########################################################################
 
     override fun onDestroy() {
-        super.onDestroy()
+        compositeDisposable.dispose()
         compositeDisposable.clear()
+        super.onDestroy()
     }
 
-    fun setActionBarTitle(text: String) {
+    private fun setActionBarTitle(text: String) {
         (activity as AppCompatActivity).supportActionBar?.title = text;
     }
 
@@ -198,36 +249,45 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     }
 
     override fun onSelect(position: Int) {
-        val elem = model.topics.value?.get(position)?:return@onSelect
+        val elem = model.topics.value?.get(position) ?: return@onSelect
         model.selectedTopicId.postValue(elem.id)
+        model.selectedTopicName.postValue(elem.title)
         model.isTopicOwned.postValue(elem.isEditable)
         view?.findNavController()?.navigate(R.id.action_topicListFragment_to_courseListFragment)
     }
 
     override fun onLongSelect(position: Int) {
-        val elem = model.topics.value?.get(position)?:return@onLongSelect
-        if (elem.isEditable){
-            createEditDialog(elem.id, elem.title, elem.description?:"")
+        val elem = model.topics.value?.get(position) ?: return@onLongSelect
+        if (elem.isEditable) {
+            createEditDialog(elem.id, elem.title, elem.description ?: "")
         } else {
-            Toast.makeText(requireContext(), "This is not your topic", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.this_is_not_your_topic),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
-    fun getVisibGone(s: Boolean): Int {
-        return if (s) {View.GONE} else {View.VISIBLE}
+    private fun getVisibGone(s: Boolean): Int {
+        return if (s) {
+            View.GONE
+        } else {
+            View.VISIBLE
+        }
     }
 
     private fun showEmptyListIndicator(state: Boolean) {
-        requireView().findViewById<RelativeLayout>(R.id.empty_list_info).visibility = getVisibGone(!state)
+        requireView().empty_list_info?.visibility = getVisibGone(!state)
     }
 
     private fun setEmptyListText(text: String) {
-        requireView().findViewById<TextView>(R.id.empty_list_text).text = text
+        requireView().empty_list_text?.text = text
     }
 
     private fun createAdditionDialog() {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("New Topic")
+        builder.setTitle(getString(R.string.new_topic))
         val innerView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.creation_dialog_layout, null)
 
@@ -240,13 +300,13 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
             createTopicRequest(nt, dt)
         }
 
-        builder.setNeutralButton("Cancel") {_, _->}
+        builder.setNeutralButton(getString(R.string.cancel_cap)) { _, _ -> }
         builder.show()
     }
 
     private fun createEditDialog(id: Int, name: String, description: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Edit Topic")
+        builder.setTitle(getString(R.string.edit_topic))
         val innerView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.creation_dialog_layout, null)
 
@@ -256,30 +316,30 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
         descrField.editText?.setText(description)
 
         builder.setView(innerView)
-        builder.setPositiveButton("Save") { dialog, which ->
+        builder.setPositiveButton(getString(R.string.save_cap)) { dialog, which ->
 
             val nt = nameField.editText?.text.toString().trim()
             val dt = descrField.editText?.text.toString().trim()
             putTopicRequest(id, nt, dt)
         }
 
-        builder.setNegativeButton("Delete") {dialog, _->
+        builder.setNegativeButton(getString(R.string.delete_cap)) { dialog, _ ->
             createDeleteConfirmation(id, name)
             dialog.dismiss()
         }
 
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel_cap)) { _, _ -> } // do nothing
         builder.show()
     }
 
     private fun createDeleteConfirmation(id: Int, name: String) {
         val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Are you sure?")
-        builder.setMessage("Delete $name")
-        builder.setPositiveButton("Delete") {_, _->
+        builder.setTitle(getString(R.string.are_you_sure))
+        builder.setMessage("${getString(R.string.delete_cap)} $name")
+        builder.setPositiveButton(getString(R.string.delete_cap)) { _, _ ->
             deleteTopicRequest(id)
         }
-        builder.setNeutralButton("Cancel") {_, _->} // do nothing
+        builder.setNeutralButton(getString(R.string.cancel_cap)) { _, _ -> } // do nothing
         builder.show()
     }
 
@@ -288,17 +348,15 @@ class TopicListFragment : Fragment(), ListAdapter.OnSelectListener, NavigationCo
     }
 
     override fun navigateToAll() {
-        model.isPersonalFilterEnabled.postValue(false)
-        loadAndSetData()
-    }
-
-    override fun navigateToPersonal() {
-        model.isPersonalFilterEnabled.postValue(true)
-        loadAndSetData()
+        // do nothing
     }
 
     override fun navigateToSubscriptions() {
-        model.isPersonalFilterEnabled.postValue(false)
+        compositeDisposable.dispose()
         findNavController().navigate(R.id.action_topicListFragment_to_subscriptionsFragment)
+    }
+
+    override fun navigateBack() {
+        // do nothing
     }
 }
