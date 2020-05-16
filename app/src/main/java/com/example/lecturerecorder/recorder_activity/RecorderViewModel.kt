@@ -2,7 +2,7 @@ package com.example.lecturerecorder.recorder_activity
 
 import android.media.MediaRecorder
 import android.util.Log
-import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.model.NoteResponse
 import java.io.IOException
 import java.util.*
 
@@ -14,7 +14,7 @@ private const val LOG_TAG = "RecorderViewModel"
 class RecorderViewModel(
     private val fileName: String,
     private val view: RecorderActivity,
-    private var notes: MutableList<Note>
+    private var notes: MutableList<NoteResponse>
 ) {
     private var recorder: MediaRecorder? = null
     private var state: RecorderState = RecorderState.NOT_STARTED
@@ -38,6 +38,7 @@ class RecorderViewModel(
             state = RecorderState.RECORDED
             view.setButton(ButtonState.NULL)
             view.enableAddNodeButton(false)
+            view.enableSubmitButton()
         }
     }
 
@@ -48,13 +49,16 @@ class RecorderViewModel(
         recorder = null
     }
 
-    fun onSavePressed() {
-        printData()
+    fun onSavePressed(lectureName: String) {
+        if (view.checkLectureName()) {
+            view.sendFile(lectureName, notes)
+            view.stop()
+        }
     }
 
     private fun startRecording() {
         recorder = MediaRecorder().apply {
-            setAudioSource(MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            setAudioSource(MediaRecorder.AudioSource.DEFAULT)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setOutputFile(fileName)
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
@@ -97,12 +101,21 @@ class RecorderViewModel(
     }
 
     fun addNote() {
-        notes.add(notes.size, Note("", getSecondsFromStartTime()))
+        notes.add(
+            notes.size,
+            NoteResponse(
+                text = "",
+                timestamp = getSecondsFromStartTime(),
+                lectureId = 0,
+                picture = "",
+                id = -1
+            )
+        )
         view.showNotesList(notes)
     }
 
-    private fun getSecondsFromStartTime(): Long =
-        (Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000
+    private fun getSecondsFromStartTime(): Int =
+        ((Calendar.getInstance().timeInMillis - timerStartTime?.timeInMillis!!) / 1000).toInt()
 
     fun onNoteRemove(index: Int) {
         notes.removeAt(index)
@@ -112,13 +125,5 @@ class RecorderViewModel(
     fun onTextChangedRemove(index: Int, text: String) {
         notes[index].text = text
         // printData()
-    }
-
-    private fun printData() {
-        Log.d("Niyaz", fileName)
-
-        notes.forEach {
-            Log.d("Niyaz", "${it.seconds}:${it.text}")
-        }
     }
 }

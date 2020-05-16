@@ -2,13 +2,15 @@ package com.example.lecturerecorder.player_activity
 
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Handler
-import android.util.Log
 import android.widget.SeekBar
-import com.example.lecturerecorder.model.LectureRecord
+import com.example.lecturerecorder.BuildConfig
+import com.example.lecturerecorder.model.LectureResponse
+import com.example.lecturerecorder.utils.getAuthToken
 
 class ListenerViewModel(
-    var lectureRecord: LectureRecord,
+    var lectureRecord: LectureResponse,
     var listenerActivity: ListenerActivity,
     var mSeekBar: SeekBar
 ) {
@@ -69,7 +71,9 @@ class ListenerViewModel(
     private fun initSeekBarListener() {
         mSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                mPlayer?.seekTo(progress * 1000)
+                if (fromUser) {
+                    mPlayer?.seekTo(progress * 1000)
+                }
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -82,7 +86,14 @@ class ListenerViewModel(
         mPlayer = MediaPlayer()
         mPlayer?.setAudioStreamType(AudioManager.STREAM_MUSIC)
         try {
-            mPlayer!!.setDataSource(lectureRecord.fileLocation)
+            mPlayer!!.setDataSource(
+                listenerActivity.applicationContext,
+                Uri.withAppendedPath(
+                    Uri.parse(BuildConfig.BASE_URL),
+                    "api/v1/files/${lectureRecord.audioFile}"
+                ),
+                mapOf<String, String>("Authorization" to "Bearer ${getAuthToken()}")
+            )
             mPlayer!!.prepare()
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -103,11 +114,13 @@ class ListenerViewModel(
         mHandler.postDelayed(mRunnable!!, 1000)
 
 
-        for (i in lectureRecord.notes.indices) {
-            listenerActivity.addDroplet(
-                i + 1,
-                lectureRecord.notes[i].seconds.toFloat() / mSeekBar.max.toFloat()
-            )
+        lectureRecord.note?.let {
+            for (i in lectureRecord.note!!.indices) {
+                listenerActivity.addDroplet(
+                    i + 1,
+                    lectureRecord.note!![i].timestamp.toFloat() / mSeekBar.max.toFloat()
+                )
+            }
         }
     }
 

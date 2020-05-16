@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/topicListFragment">
+
+    <fragment
+        android:id="@+id/topicListFragment"
+        android:name="com.example.lecturerecorder.view.fragments.TopicListFragment"
+        android:label="fragment_topic_list"
+        tools:layout="@layout/fragment_topic_list" >
+        <action
+            android:id="@+id/action_topicListFragment_to_courseListFragment"
+            app:destination="@id/courseListFragment" />
+        <action
+            android:id="@+id/action_topicListFragment_to_subscriptionsFragment"
+            app:destination="@id/subscriptionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/courseListFragment"
+        android:name="com.example.lecturerecorder.view.fragments.CourseListFragment"
+        android:label="fragment_course_list"
+        tools:layout="@layout/fragment_course_list" >
+        <action
+            android:id="@+id/action_courseListFragment_to_lectureListFragment"
+            app:destination="@id/lectureListFragment" />
+        <action
+            android:id="@+id/action_courseListFragment_to_topicListFragment"
+            app:destination="@id/topicListFragment" />
+        <action
+            android:id="@+id/action_courseListFragment_to_subscriptionsFragment"
+            app:destination="@id/subscriptionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/lectureListFragment"
+        android:name="com.example.lecturerecorder.view.fragments.LectureListFragment"
+        android:label="fragment_lecture_list"
+        tools:layout="@layout/fragment_lecture_list" >
+        <action
+            android:id="@+id/action_lectureListFragment_to_courseListFragment"
+            app:destination="@id/courseListFragment" />
+        <action
+            android:id="@+id/action_lectureListFragment_to_subscriptionsFragment"
+            app:destination="@id/subscriptionsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/subscriptionsFragment"
+        android:name="com.example.lecturerecorder.view.fragments.SubscriptionsFragment"
+        android:label="SubscriptionsFragment" >
+        <action
+            android:id="@+id/action_subscriptionsFragment_to_lectureListFragment"
+            app:destination="@id/lectureListFragment" />
+        <action
+            android:id="@+id/action_subscriptionsFragment_to_topicListFragment"
+            app:destination="@id/topicListFragment" />
+        <action
+            android:id="@+id/action_subscriptionsFragment_to_lectureListFragment2"
+            app:destination="@id/lectureListFragment" />
+        <action
+            android:id="@+id/action_subscriptionsFragment_to_courseListFragment"
+            app:destination="@id/courseListFragment" />
+    </fragment>
+</navigation>

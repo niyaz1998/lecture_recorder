@@ -7,27 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.lecturerecorder.R
-import com.example.lecturerecorder.model.LectureRecord
-import com.example.lecturerecorder.model.Note
+import com.example.lecturerecorder.model.LectureResponse
+import com.example.lecturerecorder.model.NoteResponse
+import com.example.lecturerecorder.utils.RestClient
 import com.example.lecturerecorder.utils.formatTime
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_listener.*
-
-
-var stubLecture = LectureRecord(
-    name = "stub lecture",
-    notes = listOf(
-        Note(seconds = 10, text = "note 1"),
-        Note(seconds = 20, text = "note 2"),
-        Note(seconds = 30, text = "note 3"),
-        Note(seconds = 40, text = "note 4"),
-        Note(seconds = 50, text = "note 5"),
-        Note(seconds = 60, text = "note 6")
-    ),
-    fileLocation = "https://file-examples.com/wp-content/uploads/2017/11/file_example_MP3_2MG.mp3"
-)
 
 class ListenerActivity : AppCompatActivity() {
 
@@ -35,16 +26,16 @@ class ListenerActivity : AppCompatActivity() {
         var ARGUMENTS = "ARGUMENTS"
     }
 
-    lateinit var lectureRecord: LectureRecord
+    lateinit var lectureRecord: LectureResponse
     lateinit var listenerViewModel: ListenerViewModel
+    private lateinit var compositeDisposable: CompositeDisposable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_listener)
 
-        lectureRecord =
-            if (intent.extras?.getParcelable<LectureRecord>(ARGUMENTS) != null)
-                intent.extras?.getParcelable(ARGUMENTS)!! else stubLecture
+        compositeDisposable = CompositeDisposable()
+        lectureRecord = intent.extras?.getParcelable(ARGUMENTS)!!
 
         listenerViewModel = ListenerViewModel(
             lectureRecord,
@@ -52,17 +43,34 @@ class ListenerActivity : AppCompatActivity() {
             seekBar
         )
 
-        rv_read_notes.apply {
-            layoutManager = LinearLayoutManager(this@ListenerActivity)
-            adapter =
-                ReadNotesAdapter(
-                    lectureRecord.notes
-                )
-        }
+        compositeDisposable.add(
+            RestClient.listService.getNotes(lectureId = lectureRecord.id)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe(this::notesLoaded, this::notesLoadError)
+        )
 
         bMain.setOnClickListener {
             listenerViewModel.onButtonPressed()
         }
+    }
+
+    private fun notesLoaded(response: List<NoteResponse>?) {
+        rv_read_notes.apply {
+            layoutManager = LinearLayoutManager(this@ListenerActivity)
+            adapter =
+                ReadNotesAdapter(
+                    response ?: emptyList()
+                )
+        }
+    }
+
+    private fun notesLoadError(error: Throwable) {
+        Toast.makeText(
+            this, resources.getString(R.string.notes_load_error),
+            Toast.LENGTH_SHORT
+        )
+            .show()
     }
 
     fun setButtonState(state: MainButtonState) {
@@ -75,12 +83,13 @@ class ListenerActivity : AppCompatActivity() {
     }
 
     fun setTime(seconds: Int) {
-        tvTime.text = formatTime(seconds = seconds.toLong())
+        tvTime.text = formatTime(seconds = seconds)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         listenerViewModel.stopPlaying()
+        compositeDisposable.clear()
     }
 
     fun addDroplet(index: Int, relativeMargin: Float) {
